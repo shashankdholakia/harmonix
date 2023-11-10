@@ -1,0 +1,121 @@
+0	0	(Sqrt[Pi]*BesselJ[1, rho])/rho
+1	-1	((-I)*Sqrt[3*Pi]*BesselJ[2, rho]*Sin[phi])/rho
+1	0	(Sqrt[3*Pi]*(-(rho*Cos[rho]) + Sin[rho]))/rho^3
+1	1	((-I)*Sqrt[3*Pi]*BesselJ[2, rho]*Cos[phi])/rho
+2	-2	(Sqrt[15*Pi]*BesselJ[3, rho]*Cos[phi]*Sin[phi])/rho
+2	-1	(I*Sqrt[15*Pi]*Sin[phi]*(3*rho*Cos[rho] + (-3 + rho^2)*Sin[rho]))/rho^4
+2	0	-1/2*(Sqrt[5*Pi]*(rho*BesselJ[1, rho] - 6*BesselJ[2, rho]))/rho^2
+2	1	(I*Sqrt[15*Pi]*Cos[phi]*(3*rho*Cos[rho] + (-3 + rho^2)*Sin[rho]))/rho^4
+2	2	(Sqrt[15*Pi]*BesselJ[3, rho]*Cos[2*phi])/(2*rho)
+3	-3	((I/2)*Sqrt[(35*Pi)/2]*BesselJ[4, rho]*Sin[3*phi])/rho
+3	-2	(Sqrt[105*Pi]*Cos[phi]*Sin[phi]*(rho*(-15 + rho^2)*Cos[rho] + 3*(5 - 2*rho^2)*Sin[rho]))/rho^5
+3	-1	((I/2)*Sqrt[(21*Pi)/2]*(rho*BesselJ[2, rho] - 10*BesselJ[3, rho])*Sin[phi])/rho^2
+3	0	(3*Sqrt[7*Pi]*(rho*(-15 + rho^2)*Cos[rho] + 3*(5 - 2*rho^2)*Sin[rho]))/(2*rho^5)
+3	1	((I/2)*Sqrt[(21*Pi)/2]*(rho*BesselJ[2, rho] - 10*BesselJ[3, rho])*Cos[phi])/rho^2
+3	2	(Sqrt[105*Pi]*Cos[2*phi]*(rho*(-15 + rho^2)*Cos[rho] + 3*(5 - 2*rho^2)*Sin[rho]))/(2*rho^5)
+3	3	((I/2)*Sqrt[(35*Pi)/2]*BesselJ[4, rho]*Cos[3*phi])/rho
+4	-4	(-3*Sqrt[35*Pi]*BesselJ[5, rho]*Sin[4*phi])/(8*rho)
+4	-3	(((3*I)/2)*Sqrt[(35*Pi)/2]*Sin[3*phi]*(5*rho*(-21 + 2*rho^2)*Cos[rho] + (105 - 45*rho^2 + rho^4)*Sin[rho]))/rho^6
+4	-2	(-3*Sqrt[5*Pi]*(rho*BesselJ[3, rho] - 14*BesselJ[4, rho])*Sin[2*phi])/(4*rho^2)
+4	-1	(((-9*I)/2)*Sqrt[(5*Pi)/2]*Sin[phi]*(5*rho*(-21 + 2*rho^2)*Cos[rho] + (105 - 45*rho^2 + rho^4)*Sin[rho]))/rho^6
+4	0	(3*Sqrt[Pi]*(3*rho^2*BesselJ[1, rho] - 60*rho*BesselJ[2, rho] + 280*BesselJ[3, rho]))/(8*rho^3)
+4	1	(((-9*I)/2)*Sqrt[(5*Pi)/2]*Cos[phi]*(5*rho*(-21 + 2*rho^2)*Cos[rho] + (105 - 45*rho^2 + rho^4)*Sin[rho]))/rho^6
+4	2	(-3*Sqrt[5*Pi]*(rho*BesselJ[3, rho] - 14*BesselJ[4, rho])*Cos[2*phi])/(4*rho^2)
+4	3	(((3*I)/2)*Sqrt[(35*Pi)/2]*Cos[3*phi]*(5*rho*(-21 + 2*rho^2)*Cos[rho] + (105 - 45*rho^2 + rho^4)*Sin[rho]))/rho^6
+4	4	(-3*Sqrt[35*Pi]*BesselJ[5, rho]*Cos[4*phi])/(8*rho)
+5	-5	(((-3*I)/8)*Sqrt[(77*Pi)/2]*BesselJ[6, rho]*Sin[5*phi])/rho
+5	-4	(3*Sqrt[385*Pi]*Sin[4*phi]*(rho*(945 - 105*rho^2 + rho^4)*Cos[rho] - 15*(63 - 28*rho^2 + rho^4)*Sin[rho]))/(8*rho^7)
+5	-3	((-1/8*I)*Sqrt[(385*Pi)/2]*(rho*BesselJ[4, rho] - 18*BesselJ[5, rho])*Sin[3*phi])/rho^2
+5	-2	-1/2*(Sqrt[1155*Pi]*Cos[phi]*Sin[phi]*(rho*(945 - 105*rho^2 + rho^4)*Cos[rho] - 15*(63 - 28*rho^2 + rho^4)*Sin[rho]))/rho^7
+5	-1	((-1/8*I)*Sqrt[165*Pi]*(rho*(-168 + rho^2)*BesselJ[2, rho] - 28*(-36 + rho^2)*BesselJ[3, rho])*Sin[phi])/rho^4
+5	0	(-15*Sqrt[11*Pi]*(rho*(945 - 105*rho^2 + rho^4)*Cos[rho] - 15*(63 - 28*rho^2 + rho^4)*Sin[rho]))/(8*rho^7)
+5	1	((-1/8*I)*Sqrt[165*Pi]*(rho*(-168 + rho^2)*BesselJ[2, rho] - 28*(-36 + rho^2)*BesselJ[3, rho])*Cos[phi])/rho^4
+5	2	-1/4*(Sqrt[1155*Pi]*Cos[2*phi]*(rho*(945 - 105*rho^2 + rho^4)*Cos[rho] - 15*(63 - 28*rho^2 + rho^4)*Sin[rho]))/rho^7
+5	3	((-1/8*I)*Sqrt[(385*Pi)/2]*(rho*BesselJ[4, rho] - 18*BesselJ[5, rho])*Cos[3*phi])/rho^2
+5	4	(3*Sqrt[385*Pi]*Cos[4*phi]*(rho*(945 - 105*rho^2 + rho^4)*Cos[rho] - 15*(63 - 28*rho^2 + rho^4)*Sin[rho]))/(8*rho^7)
+5	5	(((-3*I)/8)*Sqrt[(77*Pi)/2]*BesselJ[6, rho]*Cos[5*phi])/rho
+6	-6	(Sqrt[(3003*Pi)/2]*(rho*(-120 + rho^2)*BesselJ[3, rho] - 20*(-48 + rho^2)*BesselJ[4, rho])*Sin[6*phi])/(16*rho^4)
+6	-5	(((3*I)/8)*Sqrt[(1001*Pi)/2]*Sin[5*phi]*(21*rho*(495 - 60*rho^2 + rho^4)*Cos[rho] + (-10395 + 4725*rho^2 - 210*rho^4 + rho^6)*Sin[rho]))/rho^8
+6	-4	(-3*Sqrt[91*Pi]*(rho*(-220 + rho^2)*BesselJ[3, rho] + 10*(176 - 3*rho^2)*BesselJ[4, rho])*Sin[4*phi])/(16*rho^4)
+6	-3	(((-3*I)/8)*Sqrt[(1365*Pi)/2]*Sin[3*phi]*(21*rho*(495 - 60*rho^2 + rho^4)*Cos[rho] + (-10395 + 4725*rho^2 - 210*rho^4 + rho^6)*Sin[rho]))/rho^8
+6	-2	(Sqrt[(1365*Pi)/2]*(rho*(-264 + rho^2)*BesselJ[3, rho] + 12*(176 - 3*rho^2)*BesselJ[4, rho])*Cos[phi]*Sin[phi])/(8*rho^4)
+6	-1	(((5*I)/8)*Sqrt[273*Pi]*Sin[phi]*(21*rho*(495 - 60*rho^2 + rho^4)*Cos[rho] + (-10395 + 4725*rho^2 - 210*rho^4 + rho^6)*Sin[rho]))/rho^8
+6	0	(Sqrt[13*Pi]*(rho*(-66528 + 2520*rho^2 - 5*rho^4)*BesselJ[1, rho] + 42*(6336 - 504*rho^2 + 5*rho^4)*BesselJ[2, rho]))/(16*rho^6)
+6	1	(((5*I)/8)*Sqrt[273*Pi]*Cos[phi]*(21*rho*(495 - 60*rho^2 + rho^4)*Cos[rho] + (-10395 + 4725*rho^2 - 210*rho^4 + rho^6)*Sin[rho]))/rho^8
+6	2	(Sqrt[(1365*Pi)/2]*(rho*(-264 + rho^2)*BesselJ[3, rho] + 12*(176 - 3*rho^2)*BesselJ[4, rho])*Cos[2*phi])/(16*rho^4)
+6	3	(((-3*I)/8)*Sqrt[(1365*Pi)/2]*Cos[3*phi]*(21*rho*(495 - 60*rho^2 + rho^4)*Cos[rho] + (-10395 + 4725*rho^2 - 210*rho^4 + rho^6)*Sin[rho]))/rho^8
+6	4	(-3*Sqrt[91*Pi]*(rho*(-220 + rho^2)*BesselJ[3, rho] + 10*(176 - 3*rho^2)*BesselJ[4, rho])*Cos[4*phi])/(16*rho^4)
+6	5	(((3*I)/8)*Sqrt[(1001*Pi)/2]*Cos[5*phi]*(21*rho*(495 - 60*rho^2 + rho^4)*Cos[rho] + (-10395 + 4725*rho^2 - 210*rho^4 + rho^6)*Sin[rho]))/rho^8
+6	6	(Sqrt[(3003*Pi)/2]*(rho*(-120 + rho^2)*BesselJ[3, rho] - 20*(-48 + rho^2)*BesselJ[4, rho])*Cos[6*phi])/(16*rho^4)
+7	-7	(((3*I)/32)*Sqrt[715*Pi]*(rho*(-168 + rho^2)*BesselJ[4, rho] - 24*(-70 + rho^2)*BesselJ[5, rho])*Sin[7*phi])/rho^4
+7	-6	(3*Sqrt[(5005*Pi)/2]*Sin[6*phi]*(rho*(-135135 + 17325*rho^2 - 378*rho^4 + rho^6)*Cos[rho] - 7*(-19305 + 8910*rho^2 - 450*rho^4 + 4*rho^6)*Sin[rho]))/(16*rho^9)
+7	-5	(((-3*I)/32)*Sqrt[385*Pi]*(rho*(-312 + rho^2)*BesselJ[4, rho] + 12*(260 - 3*rho^2)*BesselJ[5, rho])*Sin[5*phi])/rho^4
+7	-4	(-9*Sqrt[385*Pi]*Sin[4*phi]*(rho*(-135135 + 17325*rho^2 - 378*rho^4 + rho^6)*Cos[rho] - 7*(-19305 + 8910*rho^2 - 450*rho^4 + 4*rho^6)*Sin[rho]))/(16*rho^9)
+7	-3	(((3*I)/32)*Sqrt[35*Pi]*(rho*(-1144 + 3*rho^2)*BesselJ[4, rho] + 44*(260 - 3*rho^2)*BesselJ[5, rho])*Sin[3*phi])/rho^4
+7	-2	(45*Sqrt[(35*Pi)/2]*Cos[phi]*Sin[phi]*(rho*(-135135 + 17325*rho^2 - 378*rho^4 + rho^6)*Cos[rho] - 7*(-19305 + 8910*rho^2 - 450*rho^4 + 4*rho^6)*Sin[rho]))/(8*rho^9)
+7	-1	((I/32)*Sqrt[105*Pi]*(rho*(164736 + 5*rho^2*(-792 + rho^2))*BesselJ[2, rho] - 18*(54912 - 2464*rho^2 + 15*rho^4)*BesselJ[3, rho])*Sin[phi])/rho^6
+7	0	(35*Sqrt[15*Pi]*(rho*(-135135 + 17325*rho^2 - 378*rho^4 + rho^6)*Cos[rho] - 7*(-19305 + 8910*rho^2 - 450*rho^4 + 4*rho^6)*Sin[rho]))/(16*rho^9)
+7	1	((I/32)*Sqrt[105*Pi]*(rho*(164736 + 5*rho^2*(-792 + rho^2))*BesselJ[2, rho] - 18*(54912 - 2464*rho^2 + 15*rho^4)*BesselJ[3, rho])*Cos[phi])/rho^6
+7	2	(45*Sqrt[(35*Pi)/2]*Cos[2*phi]*(rho*(-135135 + 17325*rho^2 - 378*rho^4 + rho^6)*Cos[rho] - 7*(-19305 + 8910*rho^2 - 450*rho^4 + 4*rho^6)*Sin[rho]))/(16*rho^9)
+7	3	(((3*I)/32)*Sqrt[35*Pi]*(rho*(-1144 + 3*rho^2)*BesselJ[4, rho] + 44*(260 - 3*rho^2)*BesselJ[5, rho])*Cos[3*phi])/rho^4
+7	4	(-9*Sqrt[385*Pi]*Cos[4*phi]*(rho*(-135135 + 17325*rho^2 - 378*rho^4 + rho^6)*Cos[rho] - 7*(-19305 + 8910*rho^2 - 450*rho^4 + 4*rho^6)*Sin[rho]))/(16*rho^9)
+7	5	(((-3*I)/32)*Sqrt[385*Pi]*(rho*(-312 + rho^2)*BesselJ[4, rho] + 12*(260 - 3*rho^2)*BesselJ[5, rho])*Cos[5*phi])/rho^4
+7	6	(3*Sqrt[(5005*Pi)/2]*Cos[6*phi]*(rho*(-135135 + 17325*rho^2 - 378*rho^4 + rho^6)*Cos[rho] - 7*(-19305 + 8910*rho^2 - 450*rho^4 + 4*rho^6)*Sin[rho]))/(16*rho^9)
+7	7	(((3*I)/32)*Sqrt[715*Pi]*(rho*(-168 + rho^2)*BesselJ[4, rho] - 24*(-70 + rho^2)*BesselJ[5, rho])*Cos[7*phi])/rho^4
+8	-8	(3*Sqrt[12155*Pi]*(rho*(26880 - 504*rho^2 + rho^4)*BesselJ[3, rho] - 12*(17920 - 560*rho^2 + 3*rho^4)*BesselJ[4, rho])*Sin[8*phi])/(128*rho^6)
+8	-7	(((3*I)/32)*Sqrt[12155*Pi]*Sin[7*phi]*(9*rho*(-225225 + 30030*rho^2 - 770*rho^4 + 4*rho^6)*Cos[rho] + (2027025 - 945945*rho^2 + 51975*rho^4 - 630*rho^6 + rho^8)*Sin[rho]))/rho^10
+8	-6	-1/32*(Sqrt[(7293*Pi)/2]*(rho*(50400 - 840*rho^2 + rho^4)*BesselJ[3, rho] - 10*(40320 - 1176*rho^2 + 5*rho^4)*BesselJ[4, rho])*Sin[6*phi])/rho^6
+8	-5	(((-3*I)/32)*Sqrt[17017*Pi]*Sin[5*phi]*(9*rho*(-225225 + 30030*rho^2 - 770*rho^4 + 4*rho^6)*Cos[rho] + (2027025 - 945945*rho^2 + 51975*rho^4 - 630*rho^6 + rho^8)*Sin[rho]))/rho^10
+8	-4	(3*Sqrt[1309*Pi]*(rho*(62400 - 1040*rho^2 + rho^4)*BesselJ[3, rho] - 20*(24960 - 728*rho^2 + 3*rho^4)*BesselJ[4, rho])*Sin[4*phi])/(64*rho^6)
+8	-3	(((3*I)/32)*Sqrt[19635*Pi]*Sin[3*phi]*(9*rho*(-225225 + 30030*rho^2 - 770*rho^4 + 4*rho^6)*Cos[rho] + (2027025 - 945945*rho^2 + 51975*rho^4 - 630*rho^6 + rho^8)*Sin[rho]))/rho^10
+8	-2	(-3*Sqrt[(595*Pi)/2]*(rho*(68640 - 1144*rho^2 + rho^4)*BesselJ[3, rho] - 22*(24960 - 728*rho^2 + 3*rho^4)*BesselJ[4, rho])*Sin[2*phi])/(32*rho^6)
+8	-1	(((-105*I)/32)*Sqrt[17*Pi]*Sin[phi]*(9*rho*(-225225 + 30030*rho^2 - 770*rho^4 + 4*rho^6)*Cos[rho] + (2027025 - 945945*rho^2 + 51975*rho^4 - 630*rho^6 + rho^8)*Sin[rho]))/rho^10
+8	0	(Sqrt[17*Pi]*(rho*(-118609920 + 5930496*rho^2 - 55440*rho^4 + 35*rho^6)*BesselJ[1, rho] - 72*(-6589440 + 604032*rho^2 - 11088*rho^4 + 35*rho^6)*BesselJ[2, rho]))/(128*rho^8)
+8	1	(((-105*I)/32)*Sqrt[17*Pi]*Cos[phi]*(9*rho*(-225225 + 30030*rho^2 - 770*rho^4 + 4*rho^6)*Cos[rho] + (2027025 - 945945*rho^2 + 51975*rho^4 - 630*rho^6 + rho^8)*Sin[rho]))/rho^10
+8	2	(-3*Sqrt[(595*Pi)/2]*(rho*(68640 - 1144*rho^2 + rho^4)*BesselJ[3, rho] - 22*(24960 - 728*rho^2 + 3*rho^4)*BesselJ[4, rho])*Cos[2*phi])/(32*rho^6)
+8	3	(((3*I)/32)*Sqrt[19635*Pi]*Cos[3*phi]*(9*rho*(-225225 + 30030*rho^2 - 770*rho^4 + 4*rho^6)*Cos[rho] + (2027025 - 945945*rho^2 + 51975*rho^4 - 630*rho^6 + rho^8)*Sin[rho]))/rho^10
+8	4	(3*Sqrt[1309*Pi]*(rho*(62400 - 1040*rho^2 + rho^4)*BesselJ[3, rho] - 20*(24960 - 728*rho^2 + 3*rho^4)*BesselJ[4, rho])*Cos[4*phi])/(64*rho^6)
+8	5	(((-3*I)/32)*Sqrt[17017*Pi]*Cos[5*phi]*(9*rho*(-225225 + 30030*rho^2 - 770*rho^4 + 4*rho^6)*Cos[rho] + (2027025 - 945945*rho^2 + 51975*rho^4 - 630*rho^6 + rho^8)*Sin[rho]))/rho^10
+8	6	-1/32*(Sqrt[(7293*Pi)/2]*(rho*(50400 - 840*rho^2 + rho^4)*BesselJ[3, rho] - 10*(40320 - 1176*rho^2 + 5*rho^4)*BesselJ[4, rho])*Cos[6*phi])/rho^6
+8	7	(((3*I)/32)*Sqrt[12155*Pi]*Cos[7*phi]*(9*rho*(-225225 + 30030*rho^2 - 770*rho^4 + 4*rho^6)*Cos[rho] + (2027025 - 945945*rho^2 + 51975*rho^4 - 630*rho^6 + rho^8)*Sin[rho]))/rho^10
+8	8	(3*Sqrt[12155*Pi]*(rho*(26880 - 504*rho^2 + rho^4)*BesselJ[3, rho] - 12*(17920 - 560*rho^2 + 3*rho^4)*BesselJ[4, rho])*Cos[8*phi])/(128*rho^6)
+9	-9	((I/128)*Sqrt[(230945*Pi)/2]*(rho*(48384 - 672*rho^2 + rho^4)*BesselJ[4, rho] - 42*(11520 - 256*rho^2 + rho^4)*BesselJ[5, rho])*Sin[9*phi])/rho^6
+9	-8	(3*Sqrt[230945*Pi]*Sin[8*phi]*(rho*(34459425 - 4729725*rho^2 + 135135*rho^4 - 990*rho^6 + rho^8)*Cos[rho] - 45*(765765 - 360360*rho^2 + 21021*rho^4 - 308*rho^6 + rho^8)*Sin[rho]))/(128*rho^11)
+9	-7	(((-3*I)/128)*Sqrt[(13585*Pi)/2]*(rho*(91392 - 1120*rho^2 + rho^4)*BesselJ[4, rho] - 2*(456960 - 9408*rho^2 + 29*rho^4)*BesselJ[5, rho])*Sin[7*phi])/rho^6
+9	-6	(-3*Sqrt[(40755*Pi)/2]*Sin[6*phi]*(rho*(34459425 - 4729725*rho^2 + 135135*rho^4 - 990*rho^6 + rho^8)*Cos[rho] - 45*(765765 - 360360*rho^2 + 21021*rho^4 - 308*rho^6 + rho^8)*Sin[rho]))/(32*rho^11)
+9	-5	(((3*I)/64)*Sqrt[(2717*Pi)/2]*(rho*(114240 - 1400*rho^2 + rho^4)*BesselJ[4, rho] - 70*(16320 - 336*rho^2 + rho^4)*BesselJ[5, rho])*Sin[5*phi])/rho^6
+9	-4	(3*Sqrt[95095*Pi]*Sin[4*phi]*(rho*(34459425 - 4729725*rho^2 + 135135*rho^4 - 990*rho^6 + rho^8)*Cos[rho] - 45*(765765 - 360360*rho^2 + 21021*rho^4 - 308*rho^6 + rho^8)*Sin[rho]))/(64*rho^11)
+9	-3	((-1/64*I)*Sqrt[(21945*Pi)/2]*(rho*(127296 - 1560*rho^2 + rho^4)*BesselJ[4, rho] - 78*(16320 - 336*rho^2 + rho^4)*BesselJ[5, rho])*Sin[3*phi])/rho^6
+9	-2	(-21*Sqrt[(1045*Pi)/2]*Sin[2*phi]*(rho*(34459425 - 4729725*rho^2 + 135135*rho^4 - 990*rho^6 + rho^8)*Cos[rho] - 45*(765765 - 360360*rho^2 + 21021*rho^4 - 308*rho^6 + rho^8)*Sin[rho]))/(32*rho^11)
+9	-1	(((-3*I)/128)*Sqrt[95*Pi]*(rho*(-74680320 + 2471040*rho^2 - 16016*rho^4 + 7*rho^6)*BesselJ[2, rho] - 88*(-5091840 + 274560*rho^2 - 3276*rho^4 + 7*rho^6)*BesselJ[3, rho])*Sin[phi])/rho^8
+9	0	(-315*Sqrt[19*Pi]*(rho*(34459425 - 4729725*rho^2 + 135135*rho^4 - 990*rho^6 + rho^8)*Cos[rho] - 45*(765765 - 360360*rho^2 + 21021*rho^4 - 308*rho^6 + rho^8)*Sin[rho]))/(128*rho^11)
+9	1	(((-3*I)/128)*Sqrt[95*Pi]*(rho*(-74680320 + 2471040*rho^2 - 16016*rho^4 + 7*rho^6)*BesselJ[2, rho] - 88*(-5091840 + 274560*rho^2 - 3276*rho^4 + 7*rho^6)*BesselJ[3, rho])*Cos[phi])/rho^8
+9	2	(-21*Sqrt[(1045*Pi)/2]*Cos[2*phi]*(rho*(34459425 - 4729725*rho^2 + 135135*rho^4 - 990*rho^6 + rho^8)*Cos[rho] - 45*(765765 - 360360*rho^2 + 21021*rho^4 - 308*rho^6 + rho^8)*Sin[rho]))/(32*rho^11)
+9	3	((-1/64*I)*Sqrt[(21945*Pi)/2]*(rho*(127296 - 1560*rho^2 + rho^4)*BesselJ[4, rho] - 78*(16320 - 336*rho^2 + rho^4)*BesselJ[5, rho])*Cos[3*phi])/rho^6
+9	4	(3*Sqrt[95095*Pi]*Cos[4*phi]*(rho*(34459425 - 4729725*rho^2 + 135135*rho^4 - 990*rho^6 + rho^8)*Cos[rho] - 45*(765765 - 360360*rho^2 + 21021*rho^4 - 308*rho^6 + rho^8)*Sin[rho]))/(64*rho^11)
+9	5	(((3*I)/64)*Sqrt[(2717*Pi)/2]*(rho*(114240 - 1400*rho^2 + rho^4)*BesselJ[4, rho] - 70*(16320 - 336*rho^2 + rho^4)*BesselJ[5, rho])*Cos[5*phi])/rho^6
+9	6	(-3*Sqrt[(40755*Pi)/2]*Cos[6*phi]*(rho*(34459425 - 4729725*rho^2 + 135135*rho^4 - 990*rho^6 + rho^8)*Cos[rho] - 45*(765765 - 360360*rho^2 + 21021*rho^4 - 308*rho^6 + rho^8)*Sin[rho]))/(32*rho^11)
+9	7	(((-3*I)/128)*Sqrt[(13585*Pi)/2]*(rho*(91392 - 1120*rho^2 + rho^4)*BesselJ[4, rho] - 2*(456960 - 9408*rho^2 + 29*rho^4)*BesselJ[5, rho])*Cos[7*phi])/rho^6
+9	8	(3*Sqrt[230945*Pi]*Cos[8*phi]*(rho*(34459425 - 4729725*rho^2 + 135135*rho^4 - 990*rho^6 + rho^8)*Cos[rho] - 45*(765765 - 360360*rho^2 + 21021*rho^4 - 308*rho^6 + rho^8)*Sin[rho]))/(128*rho^11)
+9	9	((I/128)*Sqrt[(230945*Pi)/2]*(rho*(48384 - 672*rho^2 + rho^4)*BesselJ[4, rho] - 42*(11520 - 256*rho^2 + rho^4)*BesselJ[5, rho])*Cos[9*phi])/rho^6
+10	-10	(Sqrt[(969969*Pi)/2]*(rho*(-9676800 + 241920*rho^2 - 1344*rho^4 + rho^6)*BesselJ[3, rho] - 56*(-1382400 + 51840*rho^2 - 480*rho^4 + rho^6)*BesselJ[4, rho])*Sin[10*phi])/(256*rho^8)
+10	-9	((I/128)*Sqrt[(4849845*Pi)/2]*Sin[9*phi]*(55*rho*(11904165 - 1670760*rho^2 + 51597*rho^4 - 468*rho^6 + rho^8)*Cos[rho] + (-654729075 + 310134825*rho^2 - 18918900*rho^4 + 315315*rho^6 - 1485*rho^8 + rho^10)*Sin[rho]))/rho^12
+10	-8	-1/256*(Sqrt[255255*Pi]*(rho*(-18385920 + 435456*rho^2 - 2100*rho^4 + rho^6)*BesselJ[3, rho] + 2*(73543680 - 2661120*rho^2 + 22512*rho^4 - 37*rho^6)*BesselJ[4, rho])*Sin[8*phi])/rho^8
+10	-7	(((-9*I)/128)*Sqrt[(85085*Pi)/2]*Sin[7*phi]*(55*rho*(11904165 - 1670760*rho^2 + 51597*rho^4 - 468*rho^6 + rho^8)*Cos[rho] + (-654729075 + 310134825*rho^2 - 18918900*rho^4 + 315315*rho^6 - 1485*rho^8 + rho^10)*Sin[rho]))/rho^12
+10	-6	(-3*Sqrt[(5005*Pi)/2]*(rho*(69457920 - 1645056*rho^2 + 7840*rho^4 - 3*rho^6)*BesselJ[3, rho] + 24*(-23152640 + 837760*rho^2 - 7056*rho^4 + 11*rho^6)*BesselJ[4, rho])*Sin[6*phi])/(256*rho^8)
+10	-5	(((45*I)/64)*Sqrt[(1001*Pi)/2]*Sin[5*phi]*(55*rho*(11904165 - 1670760*rho^2 + 51597*rho^4 - 468*rho^6 + rho^8)*Cos[rho] + (-654729075 + 310134825*rho^2 - 18918900*rho^4 + 315315*rho^6 - 1485*rho^8 + rho^10)*Sin[rho]))/rho^12
+10	-4	(-3*Sqrt[5005*Pi]*(rho*(-26046720 + 616896*rho^2 - 2940*rho^4 + rho^6)*BesselJ[3, rho] + 14*(14883840 - 538560*rho^2 + 4536*rho^4 - 7*rho^6)*BesselJ[4, rho])*Sin[4*phi])/(128*rho^8)
+10	-3	(((-21*I)/64)*Sqrt[(5005*Pi)/2]*Sin[3*phi]*(55*rho*(11904165 - 1670760*rho^2 + 51597*rho^4 - 468*rho^6 + rho^8)*Cos[rho] + (-654729075 + 310134825*rho^2 - 18918900*rho^4 + 315315*rho^6 - 1485*rho^8 + rho^10)*Sin[rho]))/rho^12
+10	-2	(3*Sqrt[385*Pi]*(rho*(-193489920 + 4582656*rho^2 - 21840*rho^4 + 7*rho^6)*BesselJ[3, rho] - 104*(-14883840 + 538560*rho^2 - 4536*rho^4 + 7*rho^6)*BesselJ[4, rho])*Sin[2*phi])/(256*rho^8)
+10	-1	(((63*I)/128)*Sqrt[1155*Pi]*Sin[phi]*(55*rho*(11904165 - 1670760*rho^2 + 51597*rho^4 - 468*rho^6 + rho^8)*Cos[rho] + (-654729075 + 310134825*rho^2 - 18918900*rho^4 + 315315*rho^6 - 1485*rho^8 + rho^10)*Sin[rho]))/rho^12
+10	0	(Sqrt[21*Pi]*(-3*rho*(28378521600 - 1618073600*rho^2 + 22651200*rho^4 - 80080*rho^6 + 21*rho^8)*BesselJ[1, rho] + 330*(1031946240 - 101836800*rho^2 + 2379520*rho^4 - 16016*rho^6 + 21*rho^8)*BesselJ[2, rho]))/(256*rho^10)
+10	1	(((63*I)/128)*Sqrt[1155*Pi]*Cos[phi]*(55*rho*(11904165 - 1670760*rho^2 + 51597*rho^4 - 468*rho^6 + rho^8)*Cos[rho] + (-654729075 + 310134825*rho^2 - 18918900*rho^4 + 315315*rho^6 - 1485*rho^8 + rho^10)*Sin[rho]))/rho^12
+10	2	(3*Sqrt[385*Pi]*(rho*(-193489920 + 4582656*rho^2 - 21840*rho^4 + 7*rho^6)*BesselJ[3, rho] - 104*(-14883840 + 538560*rho^2 - 4536*rho^4 + 7*rho^6)*BesselJ[4, rho])*Cos[2*phi])/(256*rho^8)
+10	3	(((-21*I)/64)*Sqrt[(5005*Pi)/2]*Cos[3*phi]*(55*rho*(11904165 - 1670760*rho^2 + 51597*rho^4 - 468*rho^6 + rho^8)*Cos[rho] + (-654729075 + 310134825*rho^2 - 18918900*rho^4 + 315315*rho^6 - 1485*rho^8 + rho^10)*Sin[rho]))/rho^12
+10	4	(-3*Sqrt[5005*Pi]*(rho*(-26046720 + 616896*rho^2 - 2940*rho^4 + rho^6)*BesselJ[3, rho] + 14*(14883840 - 538560*rho^2 + 4536*rho^4 - 7*rho^6)*BesselJ[4, rho])*Cos[4*phi])/(128*rho^8)
+10	5	(((45*I)/64)*Sqrt[(1001*Pi)/2]*Cos[5*phi]*(55*rho*(11904165 - 1670760*rho^2 + 51597*rho^4 - 468*rho^6 + rho^8)*Cos[rho] + (-654729075 + 310134825*rho^2 - 18918900*rho^4 + 315315*rho^6 - 1485*rho^8 + rho^10)*Sin[rho]))/rho^12
+10	6	(-3*Sqrt[(5005*Pi)/2]*(rho*(69457920 - 1645056*rho^2 + 7840*rho^4 - 3*rho^6)*BesselJ[3, rho] + 24*(-23152640 + 837760*rho^2 - 7056*rho^4 + 11*rho^6)*BesselJ[4, rho])*Cos[6*phi])/(256*rho^8)
+10	7	(((-9*I)/128)*Sqrt[(85085*Pi)/2]*Cos[7*phi]*(55*rho*(11904165 - 1670760*rho^2 + 51597*rho^4 - 468*rho^6 + rho^8)*Cos[rho] + (-654729075 + 310134825*rho^2 - 18918900*rho^4 + 315315*rho^6 - 1485*rho^8 + rho^10)*Sin[rho]))/rho^12
+10	8	-1/256*(Sqrt[255255*Pi]*(rho*(-18385920 + 435456*rho^2 - 2100*rho^4 + rho^6)*BesselJ[3, rho] + 2*(73543680 - 2661120*rho^2 + 22512*rho^4 - 37*rho^6)*BesselJ[4, rho])*Cos[8*phi])/rho^8
+10	9	((I/128)*Sqrt[(4849845*Pi)/2]*Cos[9*phi]*(55*rho*(11904165 - 1670760*rho^2 + 51597*rho^4 - 468*rho^6 + rho^8)*Cos[rho] + (-654729075 + 310134825*rho^2 - 18918900*rho^4 + 315315*rho^6 - 1485*rho^8 + rho^10)*Sin[rho]))/rho^12
+10	10	(Sqrt[(969969*Pi)/2]*(rho*(-9676800 + 241920*rho^2 - 1344*rho^4 + rho^6)*BesselJ[3, rho] - 56*(-1382400 + 51840*rho^2 - 480*rho^4 + rho^6)*BesselJ[4, rho])*Cos[10*phi])/(256*rho^8)
