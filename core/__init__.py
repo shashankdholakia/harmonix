@@ -1,2 +1,2 @@
 from .utils import get_ylm_FTs
-from .rotation import dotR
+from .solution import v
