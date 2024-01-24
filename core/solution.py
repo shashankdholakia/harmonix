@@ -1,56 +1,61 @@
-import jax
-from jaxoplanet.experimental.starry.wigner import dot_rotation_matrix
-import jax.numpy as jnp
-from .utils import get_ylm_FTs
-from scipy.special import jn as besselj
-from jax import config
-config.update("jax_enable_x64", True)
+import numpy as np
+from scipy.special import gamma, factorial, comb
 
+###############################
+#HEMISPHERIC HARMONICS SOLUTION
+###############################
+def j_to_nm(j):
+    n = int(np.ceil((-3 + np.sqrt(9 + 8 * j)) / 2))
+    m = int(2 * j - n * (n + 2))
+    return n,m
+def nm_to_j(n,m):
+    return int((n*(n+2)+m)/2)
 
-jax_funcs = get_ylm_FTs()
+jmax = lambda nmax: (nmax**2+3*nmax)//2
 
-def v(l_max, u,v,inc,obl,theta, y):
-    """
-    Computes the visibility function for a given spherical harmonic map
-    represented using the spherical harmonic coefficient vector y.
-    Rotates the star to an orientation on sky given by inclination (inc)
-    obliquity (obl), and theta (phase). The visibility function returns 
+def z_to_p(j, jmax):
+    """ returns the jth term of the zernike to polynomial basis"""
+    n,m = j_to_nm(j)
+    res = np.zeros(jmax+1)
+    for s in range(0,int((n-np.abs(m))/2)+1):
+        #this particular term of the polynomial has r^(n-2*s), that means we drop the r and instead add this to the array for n=n-2*s and m=m
+        res[nm_to_j(int(n-2*s), m)] += (-1)**s * factorial(n-s) / (factorial(s) * factorial((n+np.abs(m))/2 -s) * factorial((n-np.abs(m))/2 - s))
+    return res
+
+def hsh_to_p(n, nmax):
+    """ returns the jth term of the HSH to polynomial basis"""
+    l,m = j_to_nm(n)
+    res = np.zeros(nmax+1)
+    for k in range(0,l-np.abs(m)+1):
+        for j in range(0,int(k/2)+1):
+            #this particular term of the polynomial has r^(2*j+np.abs(m)), that means we drop the r and instead add this to the array for n=n-2*s and m=m
+            res[nm_to_j(int(2*j+np.abs(m)),m)] += (-1)**(l) * 2**l * (gamma((l+np.abs(m)+k-1)/2 +1)/(factorial(k) * factorial(l-np.abs(m)-k) * gamma((-l+np.abs(m)+k-1)/2+1))) * comb(k/2,j) * (-1)**j
+    return res
+
+def A_z_to_p(jmax):
+    A = np.zeros((jmax+1,jmax+1))
+    for j in range(jmax+1):
+        A[j] = z_to_p(j, jmax)
+    return A
+
+def A_hsh_to_p(jmax):
+    A = np.zeros((jmax+1,jmax+1))
+    for j in range(jmax+1):
+        A[j] = hsh_to_p(j, jmax)
+    return A
+
+def transform_to_zernike(hsh_vector):
+    """Takes a vector in the hemispheric harmonic basis and transforms it into a vector in the zernike basis
 
     Args:
-        u (float): _description_
-        v (float): _description_
-        inc (float): _description_
-        obl (float): _description_
-        theta (float): _description_
-        y (array): _description_
+        hsh_vector (ndarray): 1d vector of coefficients in the hemispheric harmonic basis
+        *must have length corresponding to jmax(n) where n is an integer!
     """
-    rho = u**2 + v**2
-    phi = jnp.arctan2(v,u)
-    nmax = l_max**2 + 2 * l_max + 1
-    fT = []
-    for l in range(l_max+1):
-        for m in range(-l,l+1):
-            fT.append(eval(jax_funcs[(l,m)]))
-    fT = jnp.array(fT).T
-    
-    #read from bottom to top to understand in order:
-    
-    #now rotate by the inclination, making sure to perform it along the original y axis (hence the cos and sin of obliquity)
-    x = dot_rotation_matrix(
-    l_max, -jnp.cos(obl), -jnp.sin(obl), 0.0, -(0.5 * jnp.pi - inc)
-    )(fT)
-    #rotate to the correct obliquity
-    x = dot_rotation_matrix(l_max, None, None, 1.0, obl)(x)
-    #rotate back to the equator-on view
-    x = dot_rotation_matrix(l_max, 1.0, 0.0, 0.0, -0.5 * jnp.pi)(x)
-    #rotate by theta to the correct phase, this is done for speed?
-    x = dot_rotation_matrix(l_max, None, None, 1.0, theta)(x)
-    #first rotate about the x axis 90 degrees so the vector pointing at the observer is now the pole
-    x = dot_rotation_matrix(l_max, 1.0, 0.0, 0.0, 0.5 * jnp.pi)(x)
+    jmax = len(hsh_vector)
+    A = np.linalg.inv(A_z_to_p(jmax)).T@A_hsh_to_p(jmax).T
+    return A@hsh_vector
 
-    return x @ y
-    
-    
-    
-    
-    
+
+#############################################
+#COMPLEMENTARY HEMISPHERIC HARMONICS SOLUTION
+#############################################
