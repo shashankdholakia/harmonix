@@ -75,8 +75,9 @@ def transform_to_zernike(hsh_vector):
 def zernike_FT(n,m):
     #HAVE TO MULTIPLY BY A(l,m) ALSO
     def bessel(rho,phi):
-        angular = np.where(m>=0,np.cos(np.abs(m)*phi), np.sin(np.abs(m)*phi))
-        res = (-1)**(n/2-abs(m)) * 2*np.pi*jv(n+1, rho) * angular / rho
+        angular = np.where(m>=0,np.cos(m*phi), np.sin(-m*phi))
+        #someone who is good at signs please help me simplify this. my family is dying
+        res = (-1)**(n/2-KroneckerDelta(m,0)+1+n) * 2*np.pi*jv(n+1, rho) * angular / rho
         return res
     return bessel
 #############################################
@@ -86,6 +87,7 @@ def CHSH_FT(l,m):
     """Returns a callable function of rho, phi that returns the FT of the (l,m)th element of the CHSH basis"""
     def sph_bessel(rho,phi):
         angular = np.where(m>=0,np.cos(np.abs(m)*phi), np.sin(np.abs(m)*phi))
-        res = A(l,np.abs(m))*2*np.pi*(1j)**np.abs(m) * (-1)**(l+1) * factorial2(l+np.abs(m), exact=True) / factorial2(l-np.abs(m)-1, exact=True) * spherical_jn(l,rho) * angular / rho
+        #someone who is good at signs please help me simplify this. my family is dying
+        res = A(l,np.abs(m))*2*np.pi*(1j)**(abs(m)) * (-1)**(2*l-1-KroneckerDelta(m,0)) * factorial2(l+np.abs(m), exact=True) / factorial2(l-np.abs(m)-1, exact=True) * spherical_jn(l,rho) * angular / rho
         return  res
     return sph_bessel
