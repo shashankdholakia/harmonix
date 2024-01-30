@@ -7,7 +7,7 @@ from sympy import latex
 
 def get_ylm_FTs():
     results = []
-    with open("SphericalHarmonicsResults_10.txt", 'r') as file:
+    with open("/Users/uqsdhola/Projects/harmonix/core/SphericalHarmonicsResults_10.txt", 'r') as file:
         for line in file:
             # Split the line into columns based on tabs
             columns = line.strip().split('\t')
@@ -28,3 +28,4 @@ def get_ylm_FTs():
     for l, m, res in results:
         jax_exprs[(l,m)]=replace_all(str(res), replacements)
     return jax_exprs
+
