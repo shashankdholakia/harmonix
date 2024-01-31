@@ -59,36 +59,6 @@ def analytic_v(l_max,u,v,inc,obl,theta,y):
         ft += zs[j]*zernike_FT(n,m)(rho,phi)
     return ft
         
-def v_alt(l_max, u,v,inc,obl,theta, y):
-    """
-    Computes the visibility function for a given spherical harmonic map
-    represented using the spherical harmonic coefficient vector y.
-    Rotates the star to an orientation on sky given by inclination (inc)
-    obliquity (obl), and theta (phase). The visibility function returns 
-
-    Args:
-        u (float): _description_
-        v (float): _description_
-        inc (float): _description_
-        obl (float): _description_
-        theta (float): _description_
-        y (array): _description_
-    """
-    rho = jnp.sqrt(u**2 + v**2)
-    phi = jnp.arctan2(v,u)
-    nmax = l_max**2 + 2 * l_max + 1
-    fT = []
-    for l in range(l_max+1):
-        for m in range(-l,l+1):
-            fT.append(eval(jax_funcs[(l,m)]))
-    fT = jnp.array(fT)
-    
-    Ry = left_project(l_max, y, theta, inc, obl)
-    res = np.zeros_like(rho)
-    for i, v in enumerate(Ry):
-        res+=v*fT[i]
-    return res
-        
     
 def v(l_max, u,v,inc,obl,theta, y):
     """
