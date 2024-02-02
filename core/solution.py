@@ -1,6 +1,10 @@
 import numpy as np
+import jax
+import jax.numpy as jnp
+from functools import partial
 from scipy.special import gamma, factorial, comb, factorial2
 from scipy.special import jv, spherical_jn
+from .utils import csphjy
 
 def KroneckerDelta(i,j):
     #does numpy or scipy not have a convenience function for the Kronecker Delta???
@@ -80,14 +84,54 @@ def zernike_FT(n,m):
         res = (-1)**(n/2-KroneckerDelta(m,0)+1+n) * 2*np.pi*jv(n+1, rho) * angular / rho
         return res
     return bessel
+
+def zernike_FT_jax(n,m, Jvs):
+    #HAVE TO MULTIPLY BY A(l,m) ALSO
+    def bessel(rho,phi):
+        angular = jnp.where(m>=0,jnp.cos(m*phi), jnp.sin(-m*phi))
+        #someone who is good at signs please help me simplify this. my family is dying
+        res = (-1)**(n/2-KroneckerDelta(m,0)+1+n) * 2*jnp.pi*Jvs[n+1] * angular / rho
+        return res
+    return bessel
+
 #############################################
 #COMPLEMENTARY HEMISPHERIC HARMONICS SOLUTION
 #############################################
 def CHSH_FT(l,m):
     """Returns a callable function of rho, phi that returns the FT of the (l,m)th element of the CHSH basis"""
     def sph_bessel(rho,phi):
-        angular = np.where(m>=0,np.cos(np.abs(m)*phi), np.sin(np.abs(m)*phi))
+        angular = np.where(m>=0,np.cos(m*phi), np.sin(np.abs(m)*phi))
         #someone who is good at signs please help me simplify this. my family is dying
         res = A(l,np.abs(m))*2*np.pi*(1j)**(abs(m)) * (-1)**(2*l-1-KroneckerDelta(m,0)) * factorial2(l+np.abs(m), exact=True) / factorial2(l-np.abs(m)-1, exact=True) * spherical_jn(l,rho) * angular / rho
         return  res
     return sph_bessel
+
+def CHSH_FT_jax(l,m, jvs):
+    """Returns a callable function of rho, phi that returns the FT of the (l,m)th element of the CHSH basis"""
+    def sph_bessel(rho,phi):
+        angular = jnp.where(m>=0,jnp.cos(m*phi), jnp.sin(jnp.abs(m)*phi))
+        #someone who is good at signs please help me simplify this. my family is dying
+        res = A(l,np.abs(m))*2*jnp.pi*(1j)**(abs(m)) * (-1)**(2*l-1-KroneckerDelta(m,0)) * factorial2(l+np.abs(m), exact=True) / factorial2(l-np.abs(m)-1, exact=True) * jvs[l] * angular / rho
+        return  res
+    return sph_bessel
+
+def solution_vector(l_max):
+    """Returns a function that constructs the two part Fourier solution vector given rho, phi"""
+    n_max = l_max**2 + 2 * l_max + 1
+    j_max = jmax(l_max)
+    @jax.jit
+    @partial(jnp.vectorize, signature=f"(),()->({j_max}),({n_max-j_max})")
+    def impl(rho, phi):
+        ft_hsh = []
+        ft_chsh = []
+        bessels = jax.scipy.special.bessel_jn(rho,v=l_max+1,n_iter=100)
+        spherical_bessels = csphjy(l_max,rho)
+        for l in range(l_max+1):
+            for m in range(-l,l+1):
+                #HSH
+                if (l+m)%2==0:
+                    ft_hsh.append(zernike_FT_jax(l,m,bessels)(rho,phi))
+                else:
+                    ft_chsh.append(CHSH_FT_jax(l,m, spherical_bessels)(rho,phi))
+        return jnp.stack(ft_hsh), jnp.stack(ft_chsh)
+    return impl

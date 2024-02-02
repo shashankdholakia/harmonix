@@ -5,17 +5,67 @@ import jax.numpy as jnp
 from .utils import get_ylm_FTs
 from scipy.special import jn as besselj
 from jax import config
+from jax import grad, vmap, jit
 
-from .solution import transform_to_zernike, nm_to_j, j_to_nm, jmax, zernike_FT, CHSH_FT, A
+from .solution import transform_to_zernike, nm_to_j, j_to_nm, jmax, zernike_FT, CHSH_FT, solution_vector
 from scipy.special import factorial2
 from scipy.special import jv, spherical_jn
 import numpy as np
+
+from zodiax import Base
+import equinox as eqx
+from functools import partial
 
 config.update("jax_enable_x64", True)
 
 
 jax_funcs = get_ylm_FTs()
+lm_to_n = lambda l,m : l**2+l+m
+class Harmonix(Base):
+    l_max: int
+    u: jnp.ndarray
+    v: jnp.ndarray
+    hsh_inds: jnp.ndarray
+    chsh_inds: jnp.ndarray
+    ft_hsh: jnp.ndarray
+    ft_chsh: jnp.ndarray
+    
 
+    def __init__(self,l_max, u, v):
+        """Class for computation of interferometric observables from a spherical harmonic map
+
+        Args:
+            l_max (int): Maximum degree of the spherical harmonic map
+            u (Array): U coordinates of the interferometer in nondimensional units
+            v (_type_): V coordinates of the interferometer in nondimensional units
+        """
+        self.u = u
+        self.v = v
+        self.l_max = l_max
+        n_max = l_max**2 + 2 * l_max + 1
+        hsh_mask = np.zeros(n_max, dtype=bool)
+        
+        for l in range(l_max+1):
+            for m in range(-l,l+1):
+                #HSH
+                if (l+m)%2==0:
+                    hsh_mask[lm_to_n(l,m)] = True
+        self.hsh_inds, = jnp.nonzero(hsh_mask)
+        self.chsh_inds, = jnp.nonzero(~hsh_mask)
+        rho = jnp.sqrt(u**2 + v**2)
+        phi = jnp.arctan2(v,u)
+        self.ft_hsh, self.ft_chsh = solution_vector(l_max)(rho, phi)
+        
+    def __call__(self, inc, obl, theta, y):
+        Ry = left_project(self.l_max, y, theta, inc, obl)
+
+        y_hsh = Ry[self.hsh_inds]
+        y_chsh = Ry[self.chsh_inds]
+        zernike_coeffs = transform_to_zernike(y_hsh)
+        return self.ft_hsh@zernike_coeffs + self.ft_chsh@y_chsh
+    
+
+@partial(jit, static_argnums=0)
 def left_project(deg, M, theta, inc, obl):
     # Note that here we are using the fact that R . M = (M^T . R^T)^T
     MT = jnp.transpose(M)
@@ -33,7 +83,7 @@ def left_project(deg, M, theta, inc, obl):
 
     return MT
 
-def analytic_v(l_max,u,v,inc,obl,theta,y):
+def v_scipy(l_max,u,v,inc,obl,theta,y):
     rho = jnp.sqrt(u**2 + v**2)
     phi = jnp.arctan2(v,u)
     
@@ -60,7 +110,7 @@ def analytic_v(l_max,u,v,inc,obl,theta,y):
     return ft
         
     
-def v(l_max, u,v,inc,obl,theta, y):
+def v_mathematica(l_max, u,v,inc,obl,theta, y):
     """
     Computes the visibility function for a given spherical harmonic map
     represented using the spherical harmonic coefficient vector y.
