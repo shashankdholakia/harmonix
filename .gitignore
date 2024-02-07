@@ -3,6 +3,7 @@ __pycache__/
 .spyproject/
 fits
 tests
+testing_notebooks
 
 # Compiled source #
 ###################
