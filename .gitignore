@@ -2,7 +2,6 @@ __pycache__/
 .ipynb_checkpoints/
 .spyproject/
 fits
-tests
 testing_notebooks
 
 # Compiled source #
