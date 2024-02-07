@@ -13,9 +13,7 @@ config.update("jax_enable_x64", True)
 from jax._src.lax import lax
 from jax._src.typing import Array, ArrayLike
 from jax._src.numpy.util import (
-   check_arraylike, promote_args, promote_args_inexact,
-   promote_args_numeric, promote_dtypes_inexact, promote_dtypes_numeric,
-   promote_shapes, _where, _wraps, check_no_float0s)
+   check_arraylike, promote_dtypes_inexact, _where)
 from jax._src.custom_derivatives import custom_jvp
 
 _lax_const = lax._const
