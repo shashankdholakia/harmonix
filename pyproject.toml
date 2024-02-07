@@ -1,0 +1,24 @@
+[project]
+name = "harmonix"
+version = "0.0.1"
+description = "Analytic interferometry of stellar surfaces using spherical harmonics in Jax"
+readme = "README.md"
+requires-python =">=3.8"
+authors = [
+  {name = "Shashank Dholakia", email = "s.dholakia@uq.edu.au"},
+]
+keywords = ["python", "interferometry", "machine-learning", "jax", "autodiff", "differentiable", "simulation", "telescope"]
+urls = {repository = "https://github.com/shashankdholakia/harmonix/"}
+dependencies = ["jax", "jaxlib", "scipy", "numpy", "jaxoplanet@git+https://github.com/exoplanet-dev/jaxoplanet", "zodiax>=0.4.1"]
+classifiers=[
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project.optional-dependencies]
+extras = ["matplotlib", "jupyter", "jupyterlab", "tqdm", "numpyro"]
+dev = ["pytest","sympy"]

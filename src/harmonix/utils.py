@@ -1,21 +1,10 @@
-from sympy.parsing.mathematica import mathematica
-
-import sympy as sp
-from sympy.functions.special.bessel import besselj
-from sympy.parsing.sym_expr import SymPyExpression
-from sympy import latex
-
 import numpy as np
 import jax.numpy as jnp
 import jax
-from jax import grad, jit, vmap
-from jax.lax import fori_loop, cond
+from jax import jit
 from functools import partial
 
-from scipy.special import spherical_jn
 from jax.scipy.special import gamma
-
-import matplotlib.pyplot as plt
 
 from jax import config
 config.update("jax_enable_x64", True)  
@@ -232,29 +221,4 @@ def csphjy_jvp(n, primals, tangents):
     cdj = cdj.at[0].set((jnp.cos(z) - jnp.sin(z) / z) / z)
     cdj = cdj.at[1:].set(csj[:-1] - (jnp.arange(1, len(csj)) + 1.0) * csj[1:] / z)
     return csj, cdj*z_dot
-    
-    
-def get_ylm_FTs():
-    results = []
-    with open("/Users/uqsdhola/Projects/harmonix/core/SphericalHarmonicsResults_10.txt", 'r') as file:
-        for line in file:
-            # Split the line into columns based on tabs
-            columns = line.strip().split('\t')
-            l = int(columns[0])
-            m = int(columns[1])
-            result = mathematica(columns[2], {'BesselJ[n, rho]':'besselj(n, rho)'})
-            results.append([l,m,result])
-    replacements = {'pi':'jnp.pi',
-                'cos':'jnp.cos',
-                'sin':'jnp.sin',
-                'sqrt':'jnp.sqrt',
-                'I':'1j'}
-    def replace_all(text, replacements):
-        for i in replacements:
-            text = text.replace(str(i), str(replacements[i]))
-        return text
-    jax_exprs = {}
-    for l, m, res in results:
-        jax_exprs[(l,m)]=replace_all(str(res), replacements)
-    return jax_exprs
 
