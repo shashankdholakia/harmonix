@@ -1,3 +1,4 @@
+import os
 from sympy.parsing.mathematica import mathematica
 #from sympy.functions.special.bessel import besselj
 
@@ -14,7 +15,7 @@ from jaxoplanet.experimental.starry.wigner import dot_rotation_matrix
 
 def get_ylm_FTs():
     results = []
-    with open("SphericalHarmonicsResults_10.txt", 'r') as file:
+    with open(os.path.join(os.path.dirname(__file__), 'SphericalHarmonicsResults_10.txt'), 'r') as file:
         for line in file:
             # Split the line into columns based on tabs
             columns = line.strip().split('\t')
