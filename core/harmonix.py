@@ -21,14 +21,13 @@ config.update("jax_enable_x64", True)
 
 jax_funcs = get_ylm_FTs()
 lm_to_n = lambda l,m : l**2+l+m
+
 class Harmonix(Base):
     l_max: int
     u: jnp.ndarray
     v: jnp.ndarray
     hsh_inds: jnp.ndarray
     chsh_inds: jnp.ndarray
-    ft_hsh: jnp.ndarray
-    ft_chsh: jnp.ndarray
     
 
     def __init__(self,l_max, u, v):
@@ -52,17 +51,17 @@ class Harmonix(Base):
                     hsh_mask[lm_to_n(l,m)] = True
         self.hsh_inds, = jnp.nonzero(hsh_mask)
         self.chsh_inds, = jnp.nonzero(~hsh_mask)
-        rho = jnp.sqrt(u**2 + v**2)
-        phi = jnp.arctan2(v,u)
-        self.ft_hsh, self.ft_chsh = solution_vector(l_max)(rho, phi)
         
     def __call__(self, inc, obl, theta, y):
+        rho = jnp.sqrt(self.u**2 + self.v**2)
+        phi = jnp.arctan2(self.v,self.u)
+        ft_hsh, ft_chsh = solution_vector(self.l_max)(rho, phi)
         Ry = left_project(self.l_max, y, theta, inc, obl)
 
         y_hsh = Ry[self.hsh_inds]
         y_chsh = Ry[self.chsh_inds]
         zernike_coeffs = transform_to_zernike(y_hsh)
-        return self.ft_hsh@zernike_coeffs + self.ft_chsh@y_chsh
+        return ft_hsh@zernike_coeffs + ft_chsh@y_chsh
     
 
 @partial(jit, static_argnums=0)
