@@ -9,7 +9,7 @@ authors = [
 ]
 keywords = ["python", "interferometry", "machine-learning", "jax", "autodiff", "differentiable", "simulation", "telescope"]
 urls = {repository = "https://github.com/shashankdholakia/harmonix/"}
-dependencies = ["jax", "jaxlib", "scipy", "numpy", "jaxoplanet@git+https://github.com/exoplanet-dev/jaxoplanet", "zodiax>=0.4.1"]
+dependencies = ["jax", "jaxlib", "scipy", "numpy", "jaxoplanet>=0.0.2", "zodiax>=0.4.1"]
 classifiers=[
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
