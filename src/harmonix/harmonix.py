@@ -1,4 +1,5 @@
 import jax
+from jaxoplanet.experimental.starry import Map, Ylm
 from jaxoplanet.experimental.starry.rotation import dot_rotation_matrix
 from jaxoplanet.experimental.starry.basis import A1
 import jax.numpy as jnp
@@ -16,24 +17,22 @@ config.update("jax_enable_x64", True)
 lm_to_n = lambda l,m : l**2+l+m
 
 class Harmonix(Base):
-    l_max: int
-    u: jnp.ndarray
-    v: jnp.ndarray
+    map: Ylm
     hsh_inds: jnp.ndarray
     chsh_inds: jnp.ndarray
-    
 
-    def __init__(self,l_max, u, v):
+    def __init__(self, map):
         """Class for computation of interferometric observables from a spherical harmonic map
 
         Args:
             l_max (int): Maximum degree of the spherical harmonic map
             u (Array): U coordinates of the interferometer in nondimensional units
             v (_type_): V coordinates of the interferometer in nondimensional units
+        TODO: 
+        add limb darkening as a filter after rotation using the map*map feature
         """
-        self.u = u
-        self.v = v
-        self.l_max = l_max
+        self.map = map
+        l_max = map.y.ell_max
         n_max = l_max**2 + 2 * l_max + 1
         hsh_mask = np.zeros(n_max, dtype=bool)
         
@@ -45,16 +44,22 @@ class Harmonix(Base):
         self.hsh_inds, = jnp.nonzero(hsh_mask)
         self.chsh_inds, = jnp.nonzero(~hsh_mask)
         
-    def __call__(self, inc, obl, theta, y):
-        rho = jnp.sqrt(self.u**2 + self.v**2)
-        phi = jnp.arctan2(self.v,self.u)
-        ft_hsh, ft_chsh = solution_vector(self.l_max)(rho, phi)
-        Ry = left_project(self.l_max, y, theta, inc, obl)
+    def rotational_phase(self, time):
+        if self.map.period is None:
+            return jnp.zeros_like(time)
+        else:
+            return 2 * jnp.pi * time / self.map.period
 
+    def model(self, u, v, t):
+        rho = jnp.sqrt(u**2 + v**2)
+        phi = jnp.arctan2(v,u)
+        ft_hsh, ft_chsh = solution_vector(self.map.y.ell_max)(rho, phi)
+        theta = self.rotational_phase(t)
+        Ry = left_project(self.map.y.ell_max, self.map.y.todense(), theta, self.map.inc, self.map.obl)
         y_hsh = Ry[self.hsh_inds]
         y_chsh = Ry[self.chsh_inds]
         zernike_coeffs = transform_to_zernike(y_hsh)
-        return (ft_hsh@zernike_coeffs + ft_chsh@y_chsh)/(rTA1(self.l_max)@Ry)
+        return (ft_hsh@zernike_coeffs + ft_chsh@y_chsh)/(rTA1(self.map.y.ell_max)@Ry)
     
 
 @partial(jit, static_argnums=0)
