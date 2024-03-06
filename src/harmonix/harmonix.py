@@ -49,7 +49,8 @@ class Harmonix(Base):
             return jnp.zeros_like(time)
         else:
             return 2 * jnp.pi * time / self.map.period
-
+        
+    @jit
     def model(self, u, v, t):
         rho = jnp.sqrt(u**2 + v**2)
         phi = jnp.arctan2(v,u)
@@ -59,7 +60,7 @@ class Harmonix(Base):
         y_hsh = Ry[self.hsh_inds]
         y_chsh = Ry[self.chsh_inds]
         zernike_coeffs = transform_to_zernike(y_hsh)
-        return (ft_hsh@zernike_coeffs + ft_chsh@y_chsh)/(rTA1(self.map.y.ell_max)@Ry)
+        return (ft_hsh@zernike_coeffs + ft_chsh@y_chsh)/(rTA1(self.map.y.ell_max)@Ry)/np.sqrt(np.pi)*2
     
 
 @partial(jit, static_argnums=0)
