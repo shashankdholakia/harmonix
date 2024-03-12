@@ -20,6 +20,7 @@ class Harmonix(Base):
     map: Ylm
     hsh_inds: jnp.ndarray
     chsh_inds: jnp.ndarray
+    data: jnp.ndarray
 
     def __init__(self, map):
         """Class for computation of interferometric observables from a spherical harmonic map
@@ -32,6 +33,7 @@ class Harmonix(Base):
         add limb darkening as a filter after rotation using the map*map feature
         """
         self.map = map
+        self.data = map.y.todense()
         l_max = map.y.ell_max
         n_max = l_max**2 + 2 * l_max + 1
         hsh_mask = np.zeros(n_max, dtype=bool)
@@ -56,7 +58,7 @@ class Harmonix(Base):
         phi = jnp.arctan2(v,u)
         ft_hsh, ft_chsh = solution_vector(self.map.y.ell_max)(rho, phi)
         theta = self.rotational_phase(t)
-        Ry = left_project(self.map.y.ell_max, self.map.y.todense(), theta, self.map.inc, self.map.obl)
+        Ry = left_project(self.map.y.ell_max, self.data, theta, self.map.inc, self.map.obl)
         y_hsh = Ry[self.hsh_inds]
         y_chsh = Ry[self.chsh_inds]
         zernike_coeffs = transform_to_zernike(y_hsh)
