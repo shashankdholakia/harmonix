@@ -125,3 +125,58 @@ def rT(lmax):
 
 def rTA1(lmax):
     return rT(lmax) @ A1(lmax)
+
+@partial(vmap, in_axes=(0, None, None, None))
+@partial(vmap, in_axes=(1, None, None, None))
+def cp_from_cvis(vis, index_cps1, index_cps2, index_cps3):
+    '''
+    Calculate closure phases [degrees] from complex visibilities and cp indices
+
+    vis: complex visibilities
+    index_cps1, index_cps2, index_cps3: indices for closure phases (e.g. [0,1,2] for 1st 3-baseline closure phase)
+
+    Returns: closure phases [degrees]
+
+    '''
+    real = jnp.real(vis)
+    imag = jnp.imag(vis)
+    visphiall = jnp.arctan2(imag,real)
+    visphiall = jnp.mod(visphiall + 10980., 360.)-180.
+    visphi = jnp.reshape(visphiall,(len(vis),1))
+    cp = visphi[jnp.array(index_cps1)] + visphi[jnp.array(index_cps2)] - visphi[jnp.array(index_cps3)]
+    out = jnp.reshape(cp*180/np.pi,len(index_cps1))
+    return out
+
+def visibilities(harmonix_map, u, v, t):
+    """Takes an array of u, v and times and returns the visibility amplitude where
+
+    Args:
+        harmonix_map (Harmonix): Harmonix map object
+        u (jnp.array): N_baselines x N_samples array of u coordinates
+        v (jnp.array): N_baselines x N_samples array of v coordinates
+        t (float): (temporary) float of time t
+
+    Returns:
+        jnp.array: N_samples x N_baselines array of visibility amplitudes
+    """
+    vmap_model = vmap(vmap(harmonix_map.model, in_axes=(1, 1, None)), in_axes=(None, None, 0))
+    return jnp.swapaxes(jnp.abs(vmap_model(u, v, t)),1,2)
+
+def closure_phases(harmonix_map, u, v, t, index_cps1, index_cps2, index_cps3):
+    """Takes an array of u, v and times and returns the closure phases
+
+    Args:
+        harmonix_map (Harmonix): Harmonix map object
+        u (jnp.array): N_baselines x N_samples array of u coordinates
+        v (jnp.array): N_baselines x N_samples array of v coordinates
+        t (float): (temporary) float of time t
+        index_cps1 (jnp.array): N_closure_phases array of indices
+        index_cps2 (jnp.array): N_closure_phases array of indices
+        index_cps3 (jnp.array): N_closure_phases array of indices
+
+    Returns:
+        jnp.array: N_samples x N_baselines array of complex visibilities
+    """
+    vmap_model = vmap(vmap(harmonix_map.model, in_axes=(1, 1, None)), in_axes=(None, None, 0))
+    vis = jnp.swapaxes(vmap_model(u, v, t), 1,2)
+    return jnp.swapaxes(cp_from_cvis(vis, index_cps1, index_cps2, index_cps3), 1,2)
