@@ -19,7 +19,7 @@ from jax._src.custom_derivatives import custom_jvp
 _lax_const = lax._const
 
 def jint(n):
-    return jnp.trunc(n).astype('int')
+    return jnp.astype(jnp.trunc(n), 'int')
 
 def spb1(x: ArrayLike, /) -> Array:
     '''

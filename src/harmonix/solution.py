@@ -2,7 +2,7 @@ import numpy as np
 import jax
 import jax.numpy as jnp
 from functools import partial
-from scipy.special import gamma, factorial, comb, factorial2
+from scipy.special import gamma, factorial, comb, factorial2, rgamma
 from scipy.special import jv, spherical_jn
 from .utils import csphjy
 
@@ -49,7 +49,9 @@ def hsh_to_p(n, nmax):
         for j in range(0,int(k/2)+1):
             #this particular term of the polynomial has r^(2*j+np.abs(m)), that means we drop the r and instead add this to the array for n=n-2*s and m=m
             #adding the normalization factor A(l,m) here to avoid having to add it later on: NOT REPRESENTED IN BasisTransforms.ipynb
-            res[nm_to_j(int(2*j+np.abs(m)),m)] += A(l,np.abs(m))* (-1)**(l) * 2**l * (gamma((l+np.abs(m)+k-1)/2 +1)/(factorial(k) * factorial(l-np.abs(m)-k) * gamma((-l+np.abs(m)+k-1)/2+1))) * comb(k/2,j) * (-1)**j
+            #version 1.15.0 of scipy returns nan instead of inf for gamma of negative integers,
+            #so we instead multiply by rgamma to avoid division by nan
+            res[nm_to_j(int(2*j+np.abs(m)),m)] += A(l,np.abs(m))* (-1)**(l) * 2**l * (gamma((l+np.abs(m)+k-1)/2 +1)*rgamma((-l+np.abs(m)+k-1)/2+1)/(factorial(k) * factorial(l-np.abs(m)-k))) * comb(k/2,j) * (-1)**j
     return res
 
 def A_z_to_p(jmax):

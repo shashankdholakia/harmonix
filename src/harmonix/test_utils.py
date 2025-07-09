@@ -11,7 +11,7 @@ from scipy.special import jv as besselj
 from harmonix.harmonix import left_project
 from harmonix.solution import CHSH_FT, transform_to_zernike, zernike_FT, j_to_nm
 
-from jaxoplanet.experimental.starry.rotation import dot_rotation_matrix
+from jaxoplanet.starry.core.rotation import dot_rotation_matrix
 
 def get_ylm_FTs():
     results = []

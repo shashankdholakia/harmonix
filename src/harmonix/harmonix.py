@@ -1,7 +1,9 @@
 import jax
-from jaxoplanet.experimental.starry import Map, Ylm
-from jaxoplanet.experimental.starry.rotation import dot_rotation_matrix
-from jaxoplanet.experimental.starry.basis import A1
+from jaxoplanet.starry import Ylm
+from jaxoplanet.starry.core.rotation import dot_rotation_matrix, left_project
+from jaxoplanet.starry.core.basis import A1, U
+from jaxoplanet.starry.core import solution
+from jaxoplanet.starry.core.polynomials import Pijk
 import jax.numpy as jnp
 from jax import config
 from jax import grad, vmap, jit
@@ -17,12 +19,12 @@ config.update("jax_enable_x64", True)
 lm_to_n = lambda l,m : l**2+l+m
 
 class Harmonix(Base):
-    map: Ylm
+    surface: Ylm
     hsh_inds: jnp.ndarray
     chsh_inds: jnp.ndarray
     data: jnp.ndarray
 
-    def __init__(self, map):
+    def __init__(self, surface):
         """Class for computation of interferometric observables from a spherical harmonic map
 
         Args:
@@ -32,9 +34,9 @@ class Harmonix(Base):
         TODO: 
         add limb darkening as a filter after rotation using the map*map feature
         """
-        self.map = map
-        self.data = map.y.todense()
-        l_max = map.y.ell_max
+        self.surface = surface
+        self.data = surface.y.todense()
+        l_max = surface.y.deg
         n_max = l_max**2 + 2 * l_max + 1
         hsh_mask = np.zeros(n_max, dtype=bool)
         
@@ -47,41 +49,35 @@ class Harmonix(Base):
         self.chsh_inds, = jnp.nonzero(~hsh_mask)
         
     def rotational_phase(self, time):
-        if self.map.period is None:
+        if self.surface.period is None:
             return jnp.zeros_like(time)
         else:
-            return 2 * jnp.pi * time / self.map.period
+            return 2 * jnp.pi * time / self.surface.period
         
-    @jit
+    #@jit
     def model(self, u, v, t):
         rho = jnp.sqrt(u**2 + v**2)
         phi = jnp.arctan2(v,u)
-        ft_hsh, ft_chsh = solution_vector(self.map.y.ell_max)(rho, phi)
+        ft_hsh, ft_chsh = solution_vector(self.surface.ydeg)(rho, phi)
         theta = self.rotational_phase(t)
-        Ry = left_project(self.map.y.ell_max, self.data, theta, self.map.inc, self.map.obl)
+        Ry = left_project(jnp.array(self.surface.ydeg), self.surface.inc, self.surface.obl, theta, 0.0, self.data)
+        #add limb darkening
+        """
+        udeg = self.surface.udeg
+        _u = jnp.array([1, *self.surface.u])
+        pu = _u @ U(udeg)
+        yu = jnp.array(np.linalg.inv(A1(udeg).todense()) @ pu)
+        yu = Ylm.from_dense(yu.flatten(), normalize=False)
+        norm = 1 / (Pijk.from_dense(pu, degree=udeg).todense() @ solution.rT(udeg))
+        yu = yu * norm
+        Ry = (Ry*yu).todense()
+        """
         y_hsh = Ry[self.hsh_inds]
         y_chsh = Ry[self.chsh_inds]
         zernike_coeffs = transform_to_zernike(y_hsh)
-        return (ft_hsh@zernike_coeffs + ft_chsh@y_chsh)/(rTA1(self.map.y.ell_max)@Ry)/np.sqrt(np.pi)*2
+        return (ft_hsh@zernike_coeffs + ft_chsh@y_chsh)/(rTA1(self.surface.y.deg)@Ry)/np.sqrt(np.pi)*2
     
 
-@partial(jit, static_argnums=0)
-def left_project(deg, M, theta, inc, obl):
-    # Note that here we are using the fact that R . M = (M^T . R^T)^T
-    MT = jnp.transpose(M)
-
-    # Rotate to the polar frame
-    MT = dot_rotation_matrix(deg, 1.0, 0.0, 0.0, -0.5 * jnp.pi)(MT)
-    MT = dot_rotation_matrix(deg, None, None, 1.0, -theta)(MT)
-
-    # Rotate to the sky frame
-    MT = dot_rotation_matrix(deg, 1.0, 0.0, 0.0, 0.5 * jnp.pi)(MT)
-    MT = dot_rotation_matrix(deg, None, None, 1.0, -obl)(MT)
-    MT = dot_rotation_matrix(
-        deg, -jnp.cos(obl), -jnp.sin(obl), 0.0, 0.5 * jnp.pi - inc
-    )(MT)
-
-    return MT
     
     
 def rT(lmax):
