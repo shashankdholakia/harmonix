@@ -271,3 +271,28 @@ def makebaselines(mask):
         baseline = mask[basepair[0]] - mask[basepair[1]]
         bllist.append(baseline)
     return barray, np.array(bllist)
+
+@jit
+def compute_DFTM1(x,y,uv,wavel):
+    '''
+    Compute a direct Fourier transform matrix, from coordinates x and y
+    (milliarcsec) to uv (metres) at a given wavelength wavel.
+    '''
+
+    # Convert to radians
+    x = x * jnp.pi / 180.0 / 3600.0/ 1000.0
+    y = y * jnp.pi / 180.0 / 3600.0/ 1000.0
+
+    # get uv in nondimensional units
+    uv = uv / wavel
+
+    # Compute the matrix
+    dftm = jnp.exp(-2j* jnp.pi* (jnp.outer(uv[:,0],x)+jnp.outer(uv[:,1],y)))
+
+    return dftm
+
+@jit
+def apply_DFTM1(image,dftm):
+    '''Apply a direct Fourier transform matrix to an image.'''
+    image /= image.sum()
+    return jnp.dot(dftm,image.ravel())
