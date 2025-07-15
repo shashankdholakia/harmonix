@@ -23,6 +23,8 @@ class Harmonix(Base):
     hsh_inds: jnp.ndarray
     chsh_inds: jnp.ndarray
     data: jnp.ndarray
+    u: jnp.ndarray
+    pu: jnp.ndarray
 
     def __init__(self, surface):
         """Class for computation of interferometric observables from a spherical harmonic map
@@ -36,9 +38,27 @@ class Harmonix(Base):
         """
         self.surface = surface
         self.data = surface.y.todense()
-        l_max = surface.y.deg
+        self.u = jnp.array(surface.u)
+        l_max = surface.deg
         n_max = l_max**2 + 2 * l_max + 1
         hsh_mask = np.zeros(n_max, dtype=bool)
+        
+        #We can precompute the limb darkening filter here
+        #because it doesn't change with time
+        udeg = surface.udeg
+        # limb darkening
+        if surface.udeg == 0:
+            pu = Pijk.from_dense(jnp.array([1]))
+        else:
+            u = jnp.array([1, *surface.u])
+            pu = Pijk.from_dense(u @ U(surface.udeg), degree=surface.udeg)
+        self.pu = pu
+        
+        # yu = jnp.array(np.linalg.inv(A1(udeg).todense())) @ pu
+        # yu = Ylm.from_dense(yu.flatten(), normalize=False)
+        # norm = 1 / (Pijk.from_dense(pu, degree=udeg).todense() @ solution.rT(udeg))
+        # yu = yu * norm
+        # self.yu = yu
         
         for l in range(l_max+1):
             for m in range(-l,l+1):
@@ -54,28 +74,28 @@ class Harmonix(Base):
         else:
             return 2 * jnp.pi * time / self.surface.period
         
-    #@jit
     def model(self, u, v, t):
         rho = jnp.sqrt(u**2 + v**2)
         phi = jnp.arctan2(v,u)
-        ft_hsh, ft_chsh = solution_vector(self.surface.ydeg)(rho, phi)
+        ft_hsh, ft_chsh = solution_vector(self.surface.deg)(rho, phi)
         theta = self.rotational_phase(t)
-        Ry = left_project(jnp.array(self.surface.ydeg), self.surface.inc, self.surface.obl, theta, 0.0, self.data)
-        #add limb darkening
-        """
-        udeg = self.surface.udeg
-        _u = jnp.array([1, *self.surface.u])
-        pu = _u @ U(udeg)
-        yu = jnp.array(np.linalg.inv(A1(udeg).todense()) @ pu)
-        yu = Ylm.from_dense(yu.flatten(), normalize=False)
-        norm = 1 / (Pijk.from_dense(pu, degree=udeg).todense() @ solution.rT(udeg))
-        yu = yu * norm
-        Ry = (Ry*yu).todense()
-        """
-        y_hsh = Ry[self.hsh_inds]
-        y_chsh = Ry[self.chsh_inds]
+        #start by rotating the map (before adding the limb darkening filter)
+        Ry = left_project(self.surface.ydeg, self.surface.inc, self.surface.obl, theta, 0.0, self.data)
+        
+        #convert the map to the polynomial basis
+        p_y = Pijk.from_dense(A1(self.surface.ydeg) @ Ry, degree=self.surface.ydeg)
+        #multiply the map by the limb darkening map in polynomial basis
+        p_yu = p_y * self.pu
+        p_yu = p_yu.todense().flatten()
+        #don't know why I need this normalization term but I got it from jaxoplanet.starry
+        norm = np.pi / (self.pu.tosparse() @ rT(self.surface.udeg))
+        #convert back into spherical harmonic basis
+        Ry_mul = self.surface.amplitude * (np.array(np.linalg.inv(A1(self.surface.deg).todense()) @ p_yu)) * norm
+        
+        y_hsh = Ry_mul[self.hsh_inds]
+        y_chsh = Ry_mul[self.chsh_inds]
         zernike_coeffs = transform_to_zernike(y_hsh)
-        return (ft_hsh@zernike_coeffs + ft_chsh@y_chsh)/(rTA1(self.surface.y.deg)@Ry)/np.sqrt(np.pi)*2
+        return (ft_hsh@zernike_coeffs + ft_chsh@y_chsh)/(rTA1(self.surface.deg)@Ry_mul)/np.sqrt(np.pi)*2
     
 
     

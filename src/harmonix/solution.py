@@ -83,7 +83,7 @@ def zernike_FT(n,m):
     def bessel(rho,phi):
         angular = np.where(m>=0,np.cos(m*phi), np.sin(-m*phi))
         #someone who is good at signs please help me simplify this. my family is dying
-        res = (-1)**(n/2-KroneckerDelta(m,0)+1+n) * 2*np.pi*jv(n+1, rho) * angular / rho
+        res = 1j**(n)*(-1)**(n+m) * 2*np.pi*jv(n+1, rho) * angular / rho
         return res
     return bessel
 
@@ -92,7 +92,7 @@ def zernike_FT_jax(n,m, Jvs):
     def bessel(rho,phi):
         angular = jnp.where(m>=0,jnp.cos(m*phi), jnp.sin(-m*phi))
         #someone who is good at signs please help me simplify this. my family is dying
-        res = (-1)**(n/2-KroneckerDelta(m,0)+1+n) * 2*jnp.pi*Jvs[n+1] * angular / rho
+        res = 1j**(n)*(-1)**(n+m) * 2*jnp.pi*Jvs[n+1] * angular / rho
         return res
     return bessel
 
@@ -104,7 +104,7 @@ def CHSH_FT(l,m):
     def sph_bessel(rho,phi):
         angular = np.where(m>=0,np.cos(m*phi), np.sin(np.abs(m)*phi))
         #someone who is good at signs please help me simplify this. my family is dying
-        res = A(l,np.abs(m))*2*np.pi*(1j)**(abs(m)) * (-1)**(2*l-1-KroneckerDelta(m,0)) * factorial2(l+np.abs(m), exact=True) / factorial2(l-np.abs(m)-1, exact=True) * spherical_jn(l,rho) * angular / rho
+        res = A(l,np.abs(m))*2*np.pi*(1j)**(abs(m)) * (-1)**(m) * factorial2(l+np.abs(m), exact=True) / factorial2(l-np.abs(m)-1, exact=True) * spherical_jn(l,rho) * angular / rho
         return  res
     return sph_bessel
 
@@ -113,7 +113,7 @@ def CHSH_FT_jax(l,m, jvs):
     def sph_bessel(rho,phi):
         angular = jnp.where(m>=0,jnp.cos(m*phi), jnp.sin(jnp.abs(m)*phi))
         #someone who is good at signs please help me simplify this. my family is dying
-        res = A(l,np.abs(m))*2*jnp.pi*(1j)**(abs(m)) * (-1)**(2*l-1-KroneckerDelta(m,0)) * factorial2(l+np.abs(m), exact=True) / factorial2(l-np.abs(m)-1, exact=True) * jvs[l] * angular / rho
+        res = A(l,np.abs(m))*2*jnp.pi*(1j)**(abs(m)) * (-1)**(m) * factorial2(l+np.abs(m), exact=True) / factorial2(l-np.abs(m)-1, exact=True) * jvs[l] * angular / rho
         return  res
     return sph_bessel
 
@@ -121,8 +121,9 @@ def solution_vector(l_max):
     """Returns a function that constructs the two part Fourier solution vector given rho, phi"""
     n_max = l_max**2 + 2 * l_max + 1
     j_max = jmax(l_max)
+    
     @jax.jit
-    @partial(jnp.vectorize, signature=f"(),()->({j_max}),({n_max-j_max})")
+    @partial(jnp.vectorize, signature=f"(),()->({j_max+1}),({n_max-j_max-1})")
     def impl(rho, phi):
         ft_hsh = []
         ft_chsh = []
@@ -135,5 +136,5 @@ def solution_vector(l_max):
                     ft_hsh.append(zernike_FT_jax(l,m,bessels)(rho,phi))
                 else:
                     ft_chsh.append(CHSH_FT_jax(l,m, spherical_bessels)(rho,phi))
-        return jnp.stack(ft_hsh), jnp.stack(ft_chsh)
+        return jnp.atleast_1d(ft_hsh), jnp.atleast_1d(ft_chsh)
     return impl

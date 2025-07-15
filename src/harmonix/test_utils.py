@@ -46,7 +46,7 @@ def v_scipy(l_max,u,v,inc,obl,theta,y):
     #start with y, do Rdot (not dotR) for each step in v except in regular order (read from top down in order)
     #end with rotated y
     
-    Ry = left_project(l_max, y, theta, inc, obl)
+    Ry = left_project(l_max, inc, obl, theta, 0.0, y)
     
     ft = np.zeros_like(rho)
     y_hsh = []
