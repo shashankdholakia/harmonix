@@ -1,6 +1,6 @@
 [project]
 name = "harmonix"
-version = "0.0.1"
+version = "0.0.2"
 description = "Analytic interferometry of stellar surfaces using spherical harmonics in Jax"
 readme = "README.md"
 requires-python =">=3.8"
