@@ -5,6 +5,7 @@ from functools import partial
 from scipy.special import gamma, factorial, comb, factorial2, rgamma
 from scipy.special import jv, spherical_jn
 from .utils import csphjy
+from .utils import bessel_jn
 
 def KroneckerDelta(i,j):
     #does numpy or scipy not have a convenience function for the Kronecker Delta???
@@ -127,7 +128,8 @@ def solution_vector(l_max):
     def impl(rho, phi):
         ft_hsh = []
         ft_chsh = []
-        bessels = jax.scipy.special.bessel_jn(rho,v=l_max+1,n_iter=100)
+        #bessels = jax.scipy.special.bessel_jn(rho,v=l_max+1,n_iter=100)
+        bessels = bessel_jn(l_max+1, rho)
         spherical_bessels = csphjy(l_max,rho)
         for l in range(l_max+1):
             for m in range(-l,l+1):

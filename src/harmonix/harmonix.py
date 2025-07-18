@@ -20,39 +20,27 @@ lm_to_n = lambda l,m : l**2+l+m
 
 class Harmonix(Base):
     surface: Ylm
+    radius: jnp.ndarray
     hsh_inds: jnp.ndarray
     chsh_inds: jnp.ndarray
     data: jnp.ndarray
     u: jnp.ndarray
-    pu: jnp.ndarray
 
-    def __init__(self, surface):
+    def __init__(self, surface, radius):
         """Class for computation of interferometric observables from a spherical harmonic map
 
         Args:
-            l_max (int): Maximum degree of the spherical harmonic map
-            u (Array): U coordinates of the interferometer in nondimensional units
-            v (_type_): V coordinates of the interferometer in nondimensional units
-        TODO: 
-        add limb darkening as a filter after rotation using the map*map feature
+            surface (jaxoplanet.starry.surface): The spherical harmonic map of the surface
+            radius (float): The radius of the star in milliarcseconds
         """
         self.surface = surface
         self.data = surface.y.todense()
         self.u = jnp.array(surface.u)
+        self.radius = radius
         l_max = surface.deg
         n_max = l_max**2 + 2 * l_max + 1
         hsh_mask = np.zeros(n_max, dtype=bool)
         
-        #We can precompute the limb darkening filter here
-        #because it doesn't change with time
-        udeg = surface.udeg
-        # limb darkening
-        if surface.udeg == 0:
-            pu = Pijk.from_dense(jnp.array([1]))
-        else:
-            u = jnp.array([1, *surface.u])
-            pu = Pijk.from_dense(u @ U(surface.udeg), degree=surface.udeg)
-        self.pu = pu
         
         # yu = jnp.array(np.linalg.inv(A1(udeg).todense())) @ pu
         # yu = Ylm.from_dense(yu.flatten(), normalize=False)
@@ -75,22 +63,42 @@ class Harmonix(Base):
             return 2 * jnp.pi * time / self.surface.period
         
     def model(self, u, v, t):
-        rho = jnp.sqrt(u**2 + v**2)
-        phi = jnp.arctan2(v,u)
+        """Computes the complex visibility of the star at a given time t
+
+        Args:
+            u (array): U coordinates of the baselines in dimentionless units (x baseline length / wavelength)
+            v (array): V coordinates of the baselines in dimentionless units (y baseline length / wavelength)
+            t (float): time in days relative to the reference epoch 
+
+        Returns:
+            array (complex128): complex visibility amplitudes of the star at time t
+        """
+        
+        mas2rad = jnp.pi / 180.0 / 3600.0/ 1000.0
+        u_scaled = u * self.radius * mas2rad * 2 * jnp.pi
+        v_scaled = v * self.radius * mas2rad * 2 * jnp.pi
+        rho = jnp.sqrt(u_scaled**2 + v_scaled**2)
+        phi = jnp.arctan2(v_scaled,u_scaled)
         ft_hsh, ft_chsh = solution_vector(self.surface.deg)(rho, phi)
         theta = self.rotational_phase(t)
         #start by rotating the map (before adding the limb darkening filter)
         Ry = left_project(self.surface.ydeg, self.surface.inc, self.surface.obl, theta, 0.0, self.data)
-        
+    
+        # limb darkening
+        if self.surface.udeg == 0:
+            pu = Pijk.from_dense(jnp.array([1]))
+        else:
+            u = jnp.array([1, *self.u])
+            pu = Pijk.from_dense(u @ U(self.surface.udeg), degree=self.surface.udeg)
         #convert the map to the polynomial basis
-        p_y = Pijk.from_dense(A1(self.surface.ydeg) @ Ry, degree=self.surface.ydeg)
+        p_y = Pijk.from_dense(A1(self.surface.ydeg).todense() @ Ry, degree=self.surface.ydeg)
         #multiply the map by the limb darkening map in polynomial basis
-        p_yu = p_y * self.pu
+        p_yu = p_y * pu
         p_yu = p_yu.todense().flatten()
         #don't know why I need this normalization term but I got it from jaxoplanet.starry
-        norm = np.pi / (self.pu.tosparse() @ rT(self.surface.udeg))
+        norm = np.pi / (pu.tosparse() @ rT(self.surface.udeg))
         #convert back into spherical harmonic basis
-        Ry_mul = self.surface.amplitude * (np.array(np.linalg.inv(A1(self.surface.deg).todense()) @ p_yu)) * norm
+        Ry_mul = self.surface.amplitude * (np.array(np.linalg.inv(A1(self.surface.deg).todense())) @ p_yu) * norm
         
         y_hsh = Ry_mul[self.hsh_inds]
         y_chsh = Ry_mul[self.chsh_inds]

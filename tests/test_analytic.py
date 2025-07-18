@@ -37,7 +37,6 @@ def test_harmonix_vs_analytic(radius):
     u, v = np.linspace(-500,500,64), np.linspace(-500,500,64)
     wavel = 2e-6 # m
 
-    mas2rad = jnp.pi / 180.0 / 3600.0/ 1000.0
     uu, vv = np.meshgrid(np.linspace(-500,500,64),np.linspace(-500,500,64))
     uvgrid = np.vstack((uu.flatten(),vv.flatten())).T
     # Define the spherical harmonic map
@@ -45,7 +44,7 @@ def test_harmonix_vs_analytic(radius):
     star = Surface(y=ylm, inc=0., obl=0, period=1.0)
     # Time doesn't matter for a uniform map
     t = 0.0
-    cvis = Harmonix(star).model(radius*mas2rad*2*jnp.pi*uvgrid[:,0]/wavel, radius*mas2rad*2*jnp.pi*uvgrid[:,1]/wavel, t)
+    cvis = Harmonix(star, radius).model(uvgrid[:,0]/wavel, uvgrid[:,1]/wavel, t)
     
     wgrid = np.sqrt(uvgrid[:,0]**2 + uvgrid[:,1]**2)
     ft_anal = airy(np.sort(wgrid), wavel,2*radius)
@@ -81,20 +80,23 @@ for l in range(l_max+1):
                          ,ylm_coeffs)
 def test_jax_vs_scipy(lm, y):
     l, m = lm
+    mas2rad = np.pi / 180.0 / 3600.0/ 1000.0
     u, v = jnp.linspace(0.2,10,300),jnp.linspace(0.01,.01,300)
     scipy_test = v_scipy(l,u,v,np.pi/2,0.0,0,y)/np.sqrt(np.pi)*2/(rTA1(l)@y)
     ylm = Ylm.from_dense(y)
     star = Surface(y=ylm, inc=jnp.pi/2, obl=0.0, period=jnp.inf)
-    jax_test = Harmonix(star).model(u, v, 0.0)
+    jax_test = Harmonix(star, 1.0).model(u/mas2rad/2./np.pi, v/mas2rad/2./np.pi, 0.0)
     assert jnp.allclose(scipy_test, jax_test, rtol=1e-7), f"JAX and SciPy results do not match for l={l}, m={m}"
     
 @pytest.mark.parametrize(("lm", "y")
                          ,ylm_coeffs) 
 def test_jax_vs_mathematica(lm, y):
     l, m = lm
+    mas2rad = np.pi / 180.0 / 3600.0/ 1000.0
+
     u, v = jnp.linspace(0.2,10,300),jnp.linspace(0.01,.01,300)
     mathematica_test = v_mathematica(l,u,v,np.pi/2,0.0,0,y)/jnp.sqrt(np.pi)*2/(rTA1(l)@y)
     ylm = Ylm.from_dense(y)
     star = Surface(y=ylm, inc=jnp.pi/2, obl=0.0, period=jnp.inf)
-    jax_test = Harmonix(star).model(u, v, 0.0)
+    jax_test = Harmonix(star, 1.0).model(u/mas2rad/2./np.pi, v/mas2rad/2./np.pi, 0.0)
     assert jnp.allclose(mathematica_test, jax_test, rtol=1e-5), f"JAX and Mathematica results do not match for l={l}, m={m}"

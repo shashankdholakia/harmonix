@@ -13,7 +13,6 @@ from harmonix.utils import apply_DFTM1, compute_DFTM1
 from scipy.special import j1
 import numpy as np
 
-mas2rad = jnp.pi / 180.0 / 3600.0/ 1000.0
 
 #construct a dictionary for each spherical harmonic coefficient
 #where just that coefficient is 1.0 and all others are 0.0
@@ -57,7 +56,7 @@ def test_harmonix_vs_bruteforce_ylms(lm, coeffs):
     dftm = compute_DFTM1(x, y, uvgrid, wavel)
     cvis_dftm = apply_DFTM1(image, dftm)
     
-    cvis = Harmonix(star).model(radius*mas2rad*2*jnp.pi*uvgrid[:,0]/wavel, radius*mas2rad*2*jnp.pi*uvgrid[:,1]/wavel, 0.0)
+    cvis = Harmonix(star, radius).model(uvgrid[:,0]/wavel, uvgrid[:,1]/wavel, 0.0)
     v2, phase = jnp.abs(cvis)**2, jnp.angle(cvis)
     v2_dftm, phase_dftm = jnp.abs(cvis_dftm)**2, jnp.angle(cvis_dftm)
     assert jnp.allclose(v2, v2_dftm, rtol=3e-2, atol=1e-3), "Harmonix model does not match brute force DFT for visibility squared"
@@ -90,7 +89,7 @@ def test_harmonix_vs_bruteforce_earth_map(time):
     dftm = compute_DFTM1(x, y, uvgrid, wavel)
     cvis_dftm = apply_DFTM1(image, dftm)
     
-    cvis = Harmonix(star).model(radius*mas2rad*2*jnp.pi*uvgrid[:,0]/wavel, radius*mas2rad*2*jnp.pi*uvgrid[:,1]/wavel, time)
+    cvis = Harmonix(star, radius).model(uvgrid[:,0]/wavel, uvgrid[:,1]/wavel, time)
     v2, phase = jnp.abs(cvis)**2, jnp.angle(cvis)
     v2_dftm, phase_dftm = jnp.abs(cvis_dftm)**2, jnp.angle(cvis_dftm)
     assert jnp.allclose(v2, v2_dftm, rtol=3e-2, atol=1e-3), "Harmonix model does not match brute force DFT for visibility squared"
