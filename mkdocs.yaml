@@ -1,0 +1,42 @@
+site_name: Harmonix
+site_description: "Analytic models for interferometry of rotating stars"
+site_url: https://harmonix.readthedocs.io/
+repo_url: https://github.com/shashankdholakia/harmonix
+repo_name: shashankdholakia/harmonix
+edit_uri: edit/main/docs/   # adjust branch if not "main"
+
+theme:
+  name: readthedocs
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - content.code.copy
+    - toc.integrate
+
+nav:
+  - Home: index.md
+  - API: api.md
+
+plugins:
+  - search
+  - autorefs
+  - mkdocstrings:
+      handlers:
+        python:
+          # tell mkdocstrings where to find your package
+          # if you use a "src" layout, set ["src"]; otherwise ["."]
+          paths: ["src"]   # or "."
+          options:
+            docstring_style: google
+            show_root_heading: true
+            show_signature_annotations: true
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - def_list
+  - tables
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.details
