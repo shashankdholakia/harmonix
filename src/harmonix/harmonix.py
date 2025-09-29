@@ -34,7 +34,7 @@ class Harmonix(Base):
             radius (float): The radius of the star in milliarcseconds
         """
         self.surface = surface
-        self.data = surface.y.todense()
+        self.data = surface.y.todense()[1:]
         self.u = jnp.array(surface.u)
         self.radius = radius
         l_max = surface.deg
@@ -82,8 +82,9 @@ class Harmonix(Base):
         ft_hsh, ft_chsh = solution_vector(self.surface.deg)(rho, phi)
         theta = self.rotational_phase(t)
         #start by rotating the map (before adding the limb darkening filter)
-        Ry = left_project(self.surface.ydeg, self.surface.inc, self.surface.obl, theta, 0.0, self.data)
-    
+        Ry = left_project(self.surface.ydeg, self.surface.inc, self.surface.obl, theta, 0.0, 
+                          jnp.concatenate([jnp.array([1.0,]),self.data]))
+
         # limb darkening
         if self.surface.udeg == 0:
             pu = Pijk.from_dense(jnp.array([1]))
