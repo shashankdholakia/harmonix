@@ -79,6 +79,10 @@ class Harmonix(Base):
         v_scaled = v * self.radius * mas2rad * 2 * jnp.pi
         # At zero baseline the visibility is 1 whatever phi is; keep sqrt and
         # arctan2 away from (0, 0) so that gradients stay finite there.
+        # Gradients with respect to the map, radius, orientation and time are
+        # exact (zero) there, but (rho, phi) is singular at the origin, so
+        # derivatives with respect to u and v at exactly zero baseline are
+        # returned as zero rather than their true values.
         rho2 = u_scaled**2 + v_scaled**2
         at_zero = rho2 == 0
         rho = jnp.where(at_zero, 0.0, jnp.sqrt(jnp.where(at_zero, 1.0, rho2)))

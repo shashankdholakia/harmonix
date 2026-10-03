@@ -156,3 +156,14 @@ def test_zero_baseline_is_finite_with_finite_gradients():
     assert jnp.allclose(cvis[1], 1.0, atol=1e-5)
     grad = jax.grad(lambda r: jnp.sum(jnp.abs(Harmonix(star, r).model(u, v, 0.1)) ** 2))(1.0)
     assert jnp.isfinite(grad)
+
+
+def test_solution_vector_radial_derivatives_are_continuous_at_zero():
+    # J_2(rho)/rho = rho/8 + O(rho^3), so derivatives at rho = 0 are not all
+    # zero: they must match the derivatives just beside it.
+    l_max = 4
+    def d_drho(rho):
+        return jax.jacfwd(lambda r: solution_vector(l_max)(r, 0.7))(rho)
+    for at_zero, nearby in zip(d_drho(0.0), d_drho(1e-7)):
+        assert jnp.allclose(at_zero, nearby, rtol=0, atol=1e-7)
+    assert jnp.max(jnp.abs(d_drho(0.0)[0])) > 0.01

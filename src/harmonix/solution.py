@@ -136,17 +136,18 @@ def solution_vector(l_max):
     def impl(rho, phi):
         ft_hsh = []
         ft_chsh = []
-        # The basis functions need J_k(rho) / rho and j_l(rho) / rho. At
-        # rho = 0 these tend to 1/2 for k = 1 and 1/3 for l = 1, and to zero
-        # for higher orders (k = 0 and l = 0 are never used).
-        at_zero = rho == 0
-        safe_rho = jnp.where(at_zero, 1.0, rho)
-        k = jnp.arange(l_max + 2)
-        bessels = jnp.where(at_zero, jnp.where(k == 1, 0.5, 0.0),
-                            bessel_jn(l_max+1, safe_rho) / safe_rho)
-        l_orders = jnp.arange(l_max + 1)
-        spherical_bessels = jnp.where(at_zero, jnp.where(l_orders == 1, 1/3, 0.0),
-                                      spherical_bessel_jn(l_max, safe_rho) / safe_rho)
+        # The basis functions need J_k(rho) / rho and j_l(rho) / rho. The
+        # recurrences J_k / rho = (J_{k-1} + J_{k+1}) / (2k) and
+        # j_l / rho = (j_{l-1} + j_{l+1}) / (2l + 1) give them without
+        # dividing by rho, so values and derivatives of every order are exact
+        # at rho = 0 too. Index 0 (k = 0, l = 0) is never used.
+        J = bessel_jn(l_max+2, rho)
+        k = np.arange(1, l_max+2)
+        bessels = jnp.concatenate([jnp.zeros(1), (J[k-1] + J[k+1]) / (2*k)])
+        j = spherical_bessel_jn(l_max+1, rho)
+        l_orders = np.arange(1, l_max+1)
+        spherical_bessels = jnp.concatenate(
+            [jnp.zeros(1), (j[l_orders-1] + j[l_orders+1]) / (2*l_orders + 1)])
         for l in range(l_max+1):
             for m in range(-l,l+1):
                 #HSH
