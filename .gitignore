@@ -4,6 +4,7 @@ __pycache__/
 fits
 testing_notebooks
 dist
+build
 # Compiled source #
 ###################
 *.com
