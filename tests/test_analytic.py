@@ -167,3 +167,21 @@ def test_solution_vector_radial_derivatives_are_continuous_at_zero():
     for at_zero, nearby in zip(d_drho(0.0), d_drho(1e-7)):
         assert jnp.allclose(at_zero, nearby, rtol=0, atol=1e-7)
     assert jnp.max(jnp.abs(d_drho(0.0)[0])) > 0.01
+
+
+def test_harmonix_can_be_built_inside_jit():
+    # Fitting a map means building the Surface and Harmonix from traced
+    # parameters.
+    u = jnp.array([1e7, 4e7, 9e7])
+    v = jnp.array([2e7, -3e7, 1e7])
+
+    @jax.jit
+    def visibilities(coeffs, radius):
+        star = Surface(y=Ylm.from_dense(coeffs), inc=1.1, obl=0.2, period=1.0)
+        return Harmonix(star, radius).model(u, v, 0.3)
+
+    coeffs = jnp.array([1.0, 0.1, -0.2, 0.3])
+    expected = Harmonix(
+        Surface(y=Ylm.from_dense(coeffs), inc=1.1, obl=0.2, period=1.0), 1.5
+    ).model(u, v, 0.3)
+    assert jnp.allclose(visibilities(coeffs, 1.5), expected)

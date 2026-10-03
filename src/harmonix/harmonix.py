@@ -53,8 +53,10 @@ class Harmonix(Base):
                 #HSH
                 if (l+m)%2==0:
                     hsh_mask[lm_to_n(l,m)] = True
-        self.hsh_inds, = jnp.nonzero(hsh_mask)
-        self.chsh_inds, = jnp.nonzero(~hsh_mask)
+        # np, not jnp: the masks are fixed, and jnp.nonzero fails when a
+        # Harmonix is built inside jax.jit (e.g. from fitted map parameters).
+        self.hsh_inds = jnp.asarray(np.nonzero(hsh_mask)[0])
+        self.chsh_inds = jnp.asarray(np.nonzero(~hsh_mask)[0])
         
     def rotational_phase(self, time):
         if self.surface.period is None:
