@@ -9,11 +9,14 @@ authors = [
 ]
 keywords = ["python", "interferometry", "machine-learning", "jax", "autodiff", "differentiable", "simulation", "telescope"]
 urls = {repository = "https://github.com/shashankdholakia/harmonix/"}
-dependencies = ["jax<=0.4.31", "jaxlib", "scipy", "numpy", "jaxoplanet", "zodiax>=0.4.1", "jaxbessel>=0.1.0"]
+dependencies = ["jax>=0.4.30", "jaxlib", "scipy", "numpy", "jaxoplanet", "zodiax>=0.4.1", "jaxbessel>=0.1.0"]
 classifiers=[
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
 ]
+
+[tool.setuptools.package-data]
+harmonix = ["*.txt"]
 
 [build-system]
 requires = ["setuptools", "wheel"]

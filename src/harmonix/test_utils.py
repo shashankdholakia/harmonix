@@ -87,7 +87,11 @@ def v_mathematica(l_max, u,v,inc,obl,theta, y):
     fT = []
     for l in range(l_max+1):
         for m in range(-l,l+1):
-            fT.append(eval(jax_funcs[(l,m)]))
+            # The expressions in SphericalHarmonicsResults_10.txt have the
+            # opposite sign to jaxoplanet's Ylm maps for even m != 0 (checked
+            # by direct integration over the disk in tests/test_analytic.py).
+            sign = -1 if (m != 0 and m % 2 == 0) else 1
+            fT.append(sign * eval(jax_funcs[(l,m)]))
     fT = jnp.array(fT).T
     
     #read from bottom to top to understand in order:
