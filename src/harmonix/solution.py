@@ -87,12 +87,13 @@ def zernike_FT(n,m):
         return res
     return bessel
 
-def zernike_FT_jax(n,m, Jvs):
+def zernike_FT_jax(n,m, Jvs_over_rho):
+    """Like zernike_FT, but takes J_k(rho) / rho for k = 0..n+1 (finite at rho = 0)."""
     #HAVE TO MULTIPLY BY A(l,m) ALSO
     def bessel(rho,phi):
         angular = jnp.where(m>=0,jnp.cos(m*phi), jnp.sin(-m*phi))
         #someone who is good at signs please help me simplify this. my family is dying
-        res = 1j**(n)*(-1)**(n+m) * 2*jnp.pi*Jvs[n+1] * angular / rho
+        res = 1j**(n)*(-1)**(n+m) * 2*jnp.pi*Jvs_over_rho[n+1] * angular
         return res
     return bessel
 
@@ -108,14 +109,22 @@ def CHSH_FT(l,m):
         return  res
     return sph_bessel
 
-def CHSH_FT_jax(l,m, jvs):
-    """Returns a callable function of rho, phi that returns the FT of the (l,m)th element of the CHSH basis"""
+def CHSH_FT_jax(l,m, jvs_over_rho):
+    """Returns a callable function of rho, phi that returns the FT of the (l,m)th element of the CHSH basis
+
+    Takes j_l(rho) / rho for l = 0..l_max (finite at rho = 0)."""
     def sph_bessel(rho,phi):
         angular = jnp.where(m>=0,jnp.cos(m*phi), jnp.sin(jnp.abs(m)*phi))
         #someone who is good at signs please help me simplify this. my family is dying
-        res = A(l,np.abs(m))*2*jnp.pi*(1j)**(abs(m)) * (-1)**(m) * factorial2(l+np.abs(m), exact=True) / factorial2(l-np.abs(m)-1, exact=True) * jvs[l] * angular / rho
+        res = A(l,np.abs(m))*2*jnp.pi*(1j)**(abs(m)) * (-1)**(m) * factorial2(l+np.abs(m), exact=True) / factorial2(l-np.abs(m)-1, exact=True) * jvs_over_rho[l] * angular
         return  res
     return sph_bessel
+
+def _stack(terms):
+    """Stack basis terms into a complex vector (empty when there are none)."""
+    if not terms:
+        return jnp.zeros((0,), dtype=complex)
+    return jnp.stack(terms).astype(complex)
 
 def solution_vector(l_max):
     """Returns a function that constructs the two part Fourier solution vector given rho, phi"""
@@ -127,8 +136,17 @@ def solution_vector(l_max):
     def impl(rho, phi):
         ft_hsh = []
         ft_chsh = []
-        bessels = bessel_jn(l_max+1, rho)
-        spherical_bessels = spherical_bessel_jn(l_max, rho)
+        # The basis functions need J_k(rho) / rho and j_l(rho) / rho. At
+        # rho = 0 these tend to 1/2 for k = 1 and 1/3 for l = 1, and to zero
+        # for higher orders (k = 0 and l = 0 are never used).
+        at_zero = rho == 0
+        safe_rho = jnp.where(at_zero, 1.0, rho)
+        k = jnp.arange(l_max + 2)
+        bessels = jnp.where(at_zero, jnp.where(k == 1, 0.5, 0.0),
+                            bessel_jn(l_max+1, safe_rho) / safe_rho)
+        l_orders = jnp.arange(l_max + 1)
+        spherical_bessels = jnp.where(at_zero, jnp.where(l_orders == 1, 1/3, 0.0),
+                                      spherical_bessel_jn(l_max, safe_rho) / safe_rho)
         for l in range(l_max+1):
             for m in range(-l,l+1):
                 #HSH
@@ -136,5 +154,5 @@ def solution_vector(l_max):
                     ft_hsh.append(zernike_FT_jax(l,m,bessels)(rho,phi))
                 else:
                     ft_chsh.append(CHSH_FT_jax(l,m, spherical_bessels)(rho,phi))
-        return jnp.atleast_1d(ft_hsh), jnp.atleast_1d(ft_chsh)
+        return _stack(ft_hsh), _stack(ft_chsh)
     return impl

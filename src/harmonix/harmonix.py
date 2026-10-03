@@ -77,8 +77,13 @@ class Harmonix(Base):
         mas2rad = jnp.pi / 180.0 / 3600.0/ 1000.0
         u_scaled = u * self.radius * mas2rad * 2 * jnp.pi
         v_scaled = v * self.radius * mas2rad * 2 * jnp.pi
-        rho = jnp.sqrt(u_scaled**2 + v_scaled**2)
-        phi = jnp.arctan2(v_scaled,u_scaled)
+        # At zero baseline the visibility is 1 whatever phi is; keep sqrt and
+        # arctan2 away from (0, 0) so that gradients stay finite there.
+        rho2 = u_scaled**2 + v_scaled**2
+        at_zero = rho2 == 0
+        rho = jnp.where(at_zero, 0.0, jnp.sqrt(jnp.where(at_zero, 1.0, rho2)))
+        phi = jnp.arctan2(jnp.where(at_zero, 0.0, v_scaled),
+                          jnp.where(at_zero, 1.0, u_scaled))
         ft_hsh, ft_chsh = solution_vector(self.surface.deg)(rho, phi)
         theta = self.rotational_phase(t)
         #start by rotating the map (before adding the limb darkening filter)

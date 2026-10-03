@@ -100,3 +100,59 @@ def test_jax_vs_mathematica(lm, y):
     star = Surface(y=ylm, inc=jnp.pi/2, obl=0.0, period=jnp.inf)
     jax_test = Harmonix(star, 1.0).model(u/mas2rad/2./np.pi, v/mas2rad/2./np.pi, 0.0)
     assert jnp.allclose(mathematica_test, jax_test, rtol=1e-5), f"JAX and Mathematica results do not match for l={l}, m={m}"
+
+
+def test_basis_fts_match_direct_integration():
+    """
+    Test the Fourier transform of every Ylm up to l = 4 against direct
+    numerical integration of jaxoplanet's intensity map over the stellar disk,
+    including zero baseline. This needs no external reference solution.
+    """
+    from jaxoplanet.starry.core.basis import A1, poly_basis
+
+    l_max = 4
+    n = (l_max + 1) ** 2
+    modes = [(l, m) for l in range(l_max + 1) for m in range(-l, l + 1)]
+    hsh = [j for j, (l, m) in enumerate(modes) if (l + m) % 2 == 0]
+    chsh = [j for j, (l, m) in enumerate(modes) if (l + m) % 2 == 1]
+
+    # Gauss-Legendre in s, with r = sin(s) so that z = cos(s) is smooth at
+    # the limb, and the trapezoid rule in azimuth.
+    s, ws = np.polynomial.legendre.leggauss(40)
+    s, ws = 0.25 * np.pi * (s + 1), 0.25 * np.pi * ws
+    t = 2 * np.pi * np.arange(80) / 80
+    S, T = np.meshgrid(s, t, indexing="ij")
+    x, y, z = np.sin(S) * np.cos(T), np.sin(S) * np.sin(T), np.cos(S)
+    weights = (ws[:, None] * (2 * np.pi / 80) * np.sin(S) * np.cos(S)).ravel()
+    intensity = np.asarray(poly_basis(l_max)(x.ravel(), y.ravel(), z.ravel()))
+    intensity = intensity @ np.array(A1(l_max).todense())
+
+    rho = np.linspace(0.0, 12.0, 25)
+    phi = np.linspace(-3.0, 3.0, 25)
+    kernel = np.exp(-1j * rho[:, None] * (np.cos(phi)[:, None] * x.ravel()
+                                          + np.sin(phi)[:, None] * y.ravel()))
+    # harmonix's basis carries a factor of sqrt(pi) / 2 relative to the
+    # plain Fourier integral; Harmonix.model divides it out again.
+    expected = np.sqrt(np.pi) / 2 * kernel @ (weights[:, None] * intensity)
+
+    ft_hsh, ft_chsh = solution_vector(l_max)(jnp.asarray(rho), jnp.asarray(phi))
+    for j, (l, m) in enumerate(modes):
+        if j in hsh:
+            e = np.zeros(len(hsh))
+            e[hsh.index(j)] = 1.0
+            ft = ft_hsh @ transform_to_zernike(e)
+        else:
+            ft = ft_chsh[:, chsh.index(j)]
+        assert np.allclose(ft, expected[:, j], rtol=0, atol=1e-12), f"l={l}, m={m}"
+
+
+def test_zero_baseline_is_finite_with_finite_gradients():
+    ylm = Ylm.from_dense(jnp.array([1.0, 0.2, -0.1, 0.3, 0.1, 0.0, 0.2, -0.2, 0.1]))
+    star = Surface(y=ylm, inc=1.2, obl=0.3, period=1.0, u=[0.4, 0.2])
+    u = jnp.array([0.0, 1e3, 5e7])
+    v = jnp.array([0.0, -1e3, 1e7])
+    cvis = Harmonix(star, 1.0).model(u, v, 0.1)
+    assert jnp.allclose(cvis[0], 1.0, atol=1e-12)
+    assert jnp.allclose(cvis[1], 1.0, atol=1e-5)
+    grad = jax.grad(lambda r: jnp.sum(jnp.abs(Harmonix(star, r).model(u, v, 0.1)) ** 2))(1.0)
+    assert jnp.isfinite(grad)
